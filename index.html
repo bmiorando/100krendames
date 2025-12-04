@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>100k Renda Mensal</title>
+  <title>Família 100K – Painel do Don</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
 
@@ -15,7 +15,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: radial-gradient(circle at top, #111827 0, #020617 40%, #000 100%);
+      background: radial-gradient(circle at top, #1f2933 0, #020617 45%, #02040a 100%);
       color: #f9fafb;
     }
 
@@ -34,12 +34,17 @@
       margin: 0;
       font-size: 2.4rem;
       font-weight: 800;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    header h1 span.gold {
+      color: #fbbf24;
     }
 
     header p {
       margin: 8px 0 0;
-      opacity: 0.8;
+      opacity: 0.85;
       font-size: 0.95rem;
     }
 
@@ -59,16 +64,16 @@
 
     @media (min-width: 900px) {
       .cards-grid {
-        grid-template-columns: minmax(0, 3.2fr) minmax(0, 2.2fr);
+        grid-template-columns: minmax(0, 3.3fr) minmax(0, 2.1fr);
       }
     }
 
     .card {
-      background: rgba(15, 23, 42, 0.96);
+      background: rgba(10, 15, 25, 0.96);
       border-radius: 18px;
       padding: 18px 16px 16px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
       backdrop-filter: blur(14px);
     }
 
@@ -86,7 +91,7 @@
 
     label {
       font-size: 0.8rem;
-      opacity: 0.85;
+      opacity: 0.9;
       display: block;
       margin-bottom: 4px;
     }
@@ -142,14 +147,14 @@
       border-radius: 999px;
       background: linear-gradient(90deg, #020617, #020617);
       overflow: hidden;
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.45);
     }
 
     .progress-bar-fill {
       height: 100%;
       width: 0%;
       border-radius: 999px;
-      background: linear-gradient(90deg, #22d3ee, #4ade80, #facc15, #fb923c);
+      background: linear-gradient(90deg, #b91c1c, #f97316, #fbbf24);
       transition: width 0.3s ease-out;
     }
 
@@ -159,8 +164,8 @@
       gap: 6px;
       padding: 4px 10px;
       border-radius: 999px;
-      background: linear-gradient(90deg, rgba(56,189,248,0.15), rgba(52,211,153,0.12));
-      border: 1px solid rgba(34,197,235,0.5);
+      background: linear-gradient(90deg, rgba(148, 163, 184,0.15), rgba(251, 191, 36, 0.12));
+      border: 1px solid rgba(251, 191, 36, 0.7);
       font-size: 0.78rem;
       margin-top: 8px;
     }
@@ -169,20 +174,31 @@
       width: 8px;
       height: 8px;
       border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 8px rgba(34,197,94,0.9);
+      background: #fbbf24;
+      box-shadow: 0 0 10px rgba(251,191,36,0.9);
     }
 
     .sub-label {
       font-size: 0.76rem;
-      opacity: 0.7;
+      opacity: 0.75;
       margin-top: 2px;
+    }
+
+    .save-feedback {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      opacity: 0;
+      transition: opacity 0.2s ease-out;
+    }
+
+    .save-feedback.visible {
+      opacity: 0.9;
     }
 
     /* Checkpoints */
     .checkpoints-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 8px;
       margin-top: 8px;
     }
@@ -191,7 +207,7 @@
       border-radius: 12px;
       padding: 8px 10px;
       background: rgba(15,23,42,0.96);
-      border: 1px solid rgba(148, 163, 184, 0.5);
+      border: 1px solid rgba(148, 163, 184, 0.55);
       font-size: 0.78rem;
     }
 
@@ -209,8 +225,8 @@
     }
 
     .cp-unlocked {
-      border-color: rgba(52, 211, 153, 0.9);
-      box-shadow: 0 0 12px rgba(34,197,94,0.3);
+      border-color: rgba(34,197,94,0.95);
+      box-shadow: 0 0 12px rgba(22,163,74,0.38);
     }
 
     .cp-unlocked .checkpoint-status {
@@ -218,8 +234,8 @@
     }
 
     .cp-next {
-      border-color: rgba(250, 204, 21, 0.9);
-      box-shadow: 0 0 12px rgba(250,204,21,0.25);
+      border-color: rgba(251,191,36,0.95);
+      box-shadow: 0 0 12px rgba(251,191,36,0.3);
     }
 
     .cp-next .checkpoint-status {
@@ -227,7 +243,7 @@
     }
 
     .cp-locked .checkpoint-status {
-      color: rgba(148,163,184,0.8);
+      color: rgba(148,163,184,0.85);
     }
 
     /* Missões */
@@ -261,14 +277,14 @@
     }
 
     .mission-row.done {
-      border-color: rgba(52,211,153,0.9);
-      background: rgba(5,46,22,0.9);
-      opacity: 0.95;
+      border-color: rgba(34,197,94,0.9);
+      background: rgba(5,46,22,0.95);
+      opacity: 0.97;
     }
 
     .mission-row.done input[type="text"] {
       text-decoration: line-through;
-      opacity: 0.85;
+      opacity: 0.9;
     }
 
     .btn-row {
@@ -282,7 +298,7 @@
       border: none;
       padding: 8px 12px;
       border-radius: 999px;
-      background: linear-gradient(90deg, #4f46e5, #22d3ee);
+      background: linear-gradient(90deg, #b91c1c, #f97316);
       color: #f9fafb;
       font-size: 0.82rem;
       font-weight: 600;
@@ -293,7 +309,7 @@
 
     button.secondary {
       background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148,163,184,0.6);
+      border: 1px solid rgba(148,163,184,0.7);
       box-shadow: 0 4px 10px rgba(0,0,0,0.6);
     }
 
@@ -306,36 +322,35 @@
     footer {
       margin-top: 22px;
       font-size: 0.78rem;
-      opacity: 0.55;
+      opacity: 0.6;
       text-align: center;
     }
-
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>100K Renda Mensal</h1>
-      <p>Painel privado da jornada até R$ 100.000 de renda líquida por mês.</p>
-      <div class="tagline">versão 0.2 · apenas para uso do brian</div>
+      <h1><span class="gold">Família</span> 100K</h1>
+      <p>Painel reservado do Don para acompanhar a renda da família até os R$ 100.000 por mês.</p>
+      <div class="tagline">ninguém fora da família vê isso</div>
     </header>
 
     <div class="cards-grid">
       <!-- Card principal: status -->
       <section class="card">
-        <h2><span class="emoji">🎮</span>Status atual da jornada</h2>
+        <h2><span class="emoji">🦅</span>Status da família</h2>
 
         <div class="row">
           <div class="col">
-            <label for="targetIncome">Meta de renda líquida (R$/mês)</label>
+            <label for="targetIncome">Meta de renda da família (R$/mês)</label>
             <input type="number" id="targetIncome" min="0" step="1000" />
-            <div class="helper-text">Padrão: 100000. Ajuste se um dia quiser mudar a “fase final”.</div>
+            <div class="helper-text">Por padrão: 100000. A cifra que coloca o Don em outro patamar.</div>
           </div>
 
           <div class="col">
-            <label for="currentIncome">Renda líquida atual (R$/mês)</label>
+            <label for="currentIncome">Tributo atual da família (R$/mês)</label>
             <input type="number" id="currentIncome" min="0" step="500" />
-            <div class="helper-text">Some tudo que entra limpo hoje. Seja honesto com o Brian de 100k.</div>
+            <div class="helper-text">Tudo que entra limpo hoje. Sem maquiagem, só a verdade pro Don.</div>
           </div>
         </div>
 
@@ -351,31 +366,35 @@
 
         <div class="level-chip" id="levelChip">
           <span class="dot"></span>
-          <span id="levelName">Nível 0 · Início da jornada</span>
+          <span id="levelName">Soldado em início de carreira</span>
         </div>
         <div class="sub-label" id="levelDescription">
-          Você ainda está setando o jogo. Sem pressão, só clareza.
+          Ainda é cedo. Você está montando a base, escolhendo suas guerras e alianças.
         </div>
+
+        <div id="saveFeedback" class="save-feedback"></div>
 
         <div class="btn-row">
           <button id="saveFinance">Salvar progresso</button>
-          <button id="resetFinance" class="secondary">Zerar dados</button>
+          <button id="resetFinance" class="secondary">Zerar registros</button>
         </div>
       </section>
 
       <!-- Card: missões do mês -->
       <section class="card">
-        <h2><span class="emoji">🎯</span>Missões do mês</h2>
+        <h2><span class="emoji">🎯</span>Ordens do Don – mês</h2>
         <p class="helper-text">
-          3 alavancas mais importantes deste mês. Nada de lista infinita. Só o que realmente empurra o ponteiro.
+          Três ordens que, se cumpridas este mês, aumentam o respeito da família e aproximam do próximo nível.
         </p>
 
         <div class="missions-list" id="missionsList">
           <!-- preenchido via JS -->
         </div>
 
+        <div id="missionsFeedback" class="save-feedback"></div>
+
         <div class="btn-row">
-          <button id="saveMissions">Salvar missões</button>
+          <button id="saveMissions">Registrar ordens</button>
           <button id="resetMissions" class="secondary">Limpar tudo</button>
         </div>
       </section>
@@ -383,9 +402,9 @@
 
     <!-- Card full width: checkpoints -->
     <section class="card" style="margin-top:16px;">
-      <h2><span class="emoji">📈</span>Checkpoints de renda</h2>
+      <h2><span class="emoji">📈</span>Checkpoints de respeito na praça</h2>
       <p class="helper-text">
-        Cada checkpoint é um “save point” mental. Não é sobre perfeição, é sobre não voltar atrás desses níveis.
+        Cada cifra é um ponto de não-retorno. Passou dali, o padrão de vida e de jogo do Don não volta mais para trás.
       </p>
 
       <div class="checkpoints-list" id="checkpointsList">
@@ -394,15 +413,15 @@
     </section>
 
     <footer>
-      Este painel existe para dar clareza ao Brian de hoje sobre o Brian de 100k/mês. Nada aqui é definitivo, tudo é iterável.
+      Este painel existe para que o Brian de hoje pense como Don da própria família de 100K/mês. O resto do mundo chama de sorte; aqui dentro, de estratégia.
     </footer>
   </div>
 
   <script>
     const STORAGE_KEYS = {
-      targetIncome: "brian_target_income_v2",
-      currentIncome: "brian_current_income_v2",
-      missions: "brian_monthly_missions_v1"
+      targetIncome: "brian_mafia_target_income_v1",
+      currentIncome: "brian_mafia_current_income_v1",
+      missions: "brian_mafia_monthly_missions_v1"
     };
 
     const checkpointValues = [5000, 10000, 20000, 40000, 60000, 80000, 100000];
@@ -423,35 +442,45 @@
     function getLevel(percent) {
       if (percent >= 100) {
         return {
-          name: "Nível 5 · 100K Master",
-          description: "Você chegou. Agora o jogo muda para preservar, simplificar e multiplicar.",
+          name: "Don da família 100K",
+          description: "Você assumiu o topo. Agora o jogo é proteger, simplificar e multiplicar sem chamar atenção errada."
         };
       } else if (percent >= 75) {
         return {
-          name: "Nível 4 · Elite",
-          description: "O negócio existe, funciona e só precisa de ajustes finos de margem, time e escala.",
+          name: "Underboss em operação",
+          description: "Já existe estrutura, fluxo de caixa e respeito. As decisões agora são cirúrgicas."
         };
       } else if (percent >= 50) {
         return {
-          name: "Nível 3 · Escala",
-          description: "Você encontrou algo que funciona. Agora é padronizar, delegar e repetir.",
+          name: "Consigliere em ascensão",
+          description: "Você entende o jogo, enxerga os riscos e sabe onde não mexer. Falta volume."
         };
       } else if (percent >= 25) {
         return {
-          name: "Nível 2 · Tração",
-          description: "Já existem sinais reais de resultado. O foco é matar distrações.",
+          name: "Capo com território",
+          description: "Você domina um pedaço da praça. O foco é aumentar margem e cortar ruído."
         };
       } else if (percent > 0) {
         return {
-          name: "Nível 1 · Aspirante",
-          description: "O jogo começou. Sua maior alavanca é consistência sem drama.",
+          name: "Soldado em movimento",
+          description: "Você saiu da teoria e entrou em campo. Sua arma é consistência, não pressa."
         };
       } else {
         return {
-          name: "Nível 0 · Início da jornada",
-          description: "Você ainda está setando o jogo. Sem pressão, só clareza.",
+          name: "Soldado em início de carreira",
+          description: "Ainda é cedo. Você está montando a base, escolhendo suas guerras e alianças."
         };
       }
+    }
+
+    function showFeedback(elementId, message) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      el.textContent = message;
+      el.classList.add("visible");
+      setTimeout(() => {
+        el.classList.remove("visible");
+      }, 2000);
     }
 
     function updateFinanceUI() {
@@ -490,12 +519,14 @@
       localStorage.setItem(STORAGE_KEYS.targetIncome, String(targetIncome));
       localStorage.setItem(STORAGE_KEYS.currentIncome, String(currentIncome));
       updateFinanceUI();
+      showFeedback("saveFeedback", "Tributo registrado. O Don sabe onde está.");
     }
 
     function resetFinance() {
       localStorage.removeItem(STORAGE_KEYS.targetIncome);
       localStorage.removeItem(STORAGE_KEYS.currentIncome);
       updateFinanceUI();
+      showFeedback("saveFeedback", "Registros apagados. O livro da família foi limpo.");
     }
 
     // Checkpoints
@@ -514,7 +545,7 @@
 
         const status = document.createElement("div");
         status.className = "checkpoint-status";
-        status.innerHTML = `<span>🔒</span><span>Aguardando progresso</span>`;
+        status.innerHTML = `<span>🔒</span><span>Aguardando respeito</span>`;
 
         div.appendChild(title);
         div.appendChild(status);
@@ -533,14 +564,14 @@
 
         if (currentIncome >= value) {
           node.classList.add("cp-unlocked");
-          status.innerHTML = `<span>✅</span><span>Desbloqueado</span>`;
+          status.innerHTML = `<span>✅</span><span>Respeito consolidado</span>`;
         } else if (!firstLockedFound) {
           node.classList.add("cp-next");
-          status.innerHTML = `<span>⭐</span><span>Próximo alvo</span>`;
+          status.innerHTML = `<span>⭐</span><span>Próximo território</span>`;
           firstLockedFound = true;
         } else {
           node.classList.add("cp-locked");
-          status.innerHTML = `<span>🔒</span><span>Bloqueado</span>`;
+          status.innerHTML = `<span>🔒</span><span>Ainda fora do alcance</span>`;
         }
       });
     }
@@ -586,7 +617,7 @@
         const input = document.createElement("input");
         input.type = "text";
         input.value = mission.text;
-        input.placeholder = `Missão ${index + 1} deste mês`;
+        input.placeholder = `Ordem ${index + 1} deste mês`;
 
         checkbox.addEventListener("change", () => {
           mission.done = checkbox.checked;
@@ -618,7 +649,6 @@
         missions = JSON.parse(raw);
       } catch {}
 
-      // Atualizar com estado atual dos inputs
       const rows = container.querySelectorAll(".mission-row");
       rows.forEach(row => {
         const idx = Number(row.dataset.index);
@@ -632,11 +662,13 @@
 
       localStorage.setItem(STORAGE_KEYS.missions, JSON.stringify(missions));
       renderMissions();
+      showFeedback("missionsFeedback", "Ordens registradas. A família sabe o que precisa fazer.");
     }
 
     function resetMissions() {
       localStorage.removeItem(STORAGE_KEYS.missions);
       renderMissions();
+      showFeedback("missionsFeedback", "Ordens apagadas. Novo plano para o Don.");
     }
 
     document.addEventListener("DOMContentLoaded", () => {
