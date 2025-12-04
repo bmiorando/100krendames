@@ -157,3 +157,502 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(56,189,248,0.15), rgba(52,211,153,0.12));
+      border: 1px solid rgba(34,197,235,0.5);
+      font-size: 0.78rem;
+      margin-top: 8px;
+    }
+
+    .level-chip span.dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34,197,94,0.9);
+    }
+
+    .sub-label {
+      font-size: 0.76rem;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
+    /* Checkpoints */
+    .checkpoints-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .checkpoint {
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: rgba(15,23,42,0.96);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 0.78rem;
+    }
+
+    .checkpoint-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+    }
+
+    .checkpoint-status {
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cp-unlocked {
+      border-color: rgba(52, 211, 153, 0.9);
+      box-shadow: 0 0 12px rgba(34,197,94,0.3);
+    }
+
+    .cp-unlocked .checkpoint-status {
+      color: #4ade80;
+    }
+
+    .cp-next {
+      border-color: rgba(250, 204, 21, 0.9);
+      box-shadow: 0 0 12px rgba(250,204,21,0.25);
+    }
+
+    .cp-next .checkpoint-status {
+      color: #facc15;
+    }
+
+    .cp-locked .checkpoint-status {
+      color: rgba(148,163,184,0.8);
+    }
+
+    /* Missões */
+    .missions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .mission-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(148,163,184,0.3);
+    }
+
+    .mission-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .mission-row input[type="text"] {
+      font-size: 0.85rem;
+      padding: 6px 8px;
+      border-radius: 8px;
+    }
+
+    .mission-row.done {
+      border-color: rgba(52,211,153,0.9);
+      background: rgba(5,46,22,0.9);
+      opacity: 0.95;
+    }
+
+    .mission-row.done input[type="text"] {
+      text-decoration: line-through;
+      opacity: 0.85;
+    }
+
+    .btn-row {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    button {
+      border: none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #4f46e5, #22d3ee);
+      color: #f9fafb;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+    }
+
+    button.secondary {
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.6);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+      opacity: 0.95;
+    }
+
+    footer {
+      margin-top: 22px;
+      font-size: 0.78rem;
+      opacity: 0.55;
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>100K Renda Mensal</h1>
+      <p>Painel privado da jornada até R$ 100.000 de renda líquida por mês.</p>
+      <div class="tagline">versão 0.2 · apenas para uso do brian</div>
+    </header>
+
+    <div class="cards-grid">
+      <!-- Card principal: status -->
+      <section class="card">
+        <h2><span class="emoji">🎮</span>Status atual da jornada</h2>
+
+        <div class="row">
+          <div class="col">
+            <label for="targetIncome">Meta de renda líquida (R$/mês)</label>
+            <input type="number" id="targetIncome" min="0" step="1000" />
+            <div class="helper-text">Padrão: 100000. Ajuste se um dia quiser mudar a “fase final”.</div>
+          </div>
+
+          <div class="col">
+            <label for="currentIncome">Renda líquida atual (R$/mês)</label>
+            <input type="number" id="currentIncome" min="0" step="500" />
+            <div class="helper-text">Some tudo que entra limpo hoje. Seja honesto com o Brian de 100k.</div>
+          </div>
+        </div>
+
+        <div class="progress-wrapper">
+          <div class="progress-label">
+            <span id="progressText">0% do caminho</span>
+            <span id="progressValues">R$ 0 / R$ 100.000</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBarMain"></div>
+          </div>
+        </div>
+
+        <div class="level-chip" id="levelChip">
+          <span class="dot"></span>
+          <span id="levelName">Nível 0 · Início da jornada</span>
+        </div>
+        <div class="sub-label" id="levelDescription">
+          Você ainda está setando o jogo. Sem pressão, só clareza.
+        </div>
+
+        <div class="btn-row">
+          <button id="saveFinance">Salvar progresso</button>
+          <button id="resetFinance" class="secondary">Zerar dados</button>
+        </div>
+      </section>
+
+      <!-- Card: missões do mês -->
+      <section class="card">
+        <h2><span class="emoji">🎯</span>Missões do mês</h2>
+        <p class="helper-text">
+          3 alavancas mais importantes deste mês. Nada de lista infinita. Só o que realmente empurra o ponteiro.
+        </p>
+
+        <div class="missions-list" id="missionsList">
+          <!-- preenchido via JS -->
+        </div>
+
+        <div class="btn-row">
+          <button id="saveMissions">Salvar missões</button>
+          <button id="resetMissions" class="secondary">Limpar tudo</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Card full width: checkpoints -->
+    <section class="card" style="margin-top:16px;">
+      <h2><span class="emoji">📈</span>Checkpoints de renda</h2>
+      <p class="helper-text">
+        Cada checkpoint é um “save point” mental. Não é sobre perfeição, é sobre não voltar atrás desses níveis.
+      </p>
+
+      <div class="checkpoints-list" id="checkpointsList">
+        <!-- preenchido via JS -->
+      </div>
+    </section>
+
+    <footer>
+      Este painel existe para dar clareza ao Brian de hoje sobre o Brian de 100k/mês. Nada aqui é definitivo, tudo é iterável.
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEYS = {
+      targetIncome: "brian_target_income_v2",
+      currentIncome: "brian_current_income_v2",
+      missions: "brian_monthly_missions_v1"
+    };
+
+    const checkpointValues = [5000, 10000, 20000, 40000, 60000, 80000, 100000];
+
+    function formatCurrency(value) {
+      if (isNaN(value)) value = 0;
+      return value.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        maximumFractionDigits: 0
+      });
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function getLevel(percent) {
+      if (percent >= 100) {
+        return {
+          name: "Nível 5 · 100K Master",
+          description: "Você chegou. Agora o jogo muda para preservar, simplificar e multiplicar.",
+        };
+      } else if (percent >= 75) {
+        return {
+          name: "Nível 4 · Elite",
+          description: "O negócio existe, funciona e só precisa de ajustes finos de margem, time e escala.",
+        };
+      } else if (percent >= 50) {
+        return {
+          name: "Nível 3 · Escala",
+          description: "Você encontrou algo que funciona. Agora é padronizar, delegar e repetir.",
+        };
+      } else if (percent >= 25) {
+        return {
+          name: "Nível 2 · Tração",
+          description: "Já existem sinais reais de resultado. O foco é matar distrações.",
+        };
+      } else if (percent > 0) {
+        return {
+          name: "Nível 1 · Aspirante",
+          description: "O jogo começou. Sua maior alavanca é consistência sem drama.",
+        };
+      } else {
+        return {
+          name: "Nível 0 · Início da jornada",
+          description: "Você ainda está setando o jogo. Sem pressão, só clareza.",
+        };
+      }
+    }
+
+    function updateFinanceUI() {
+      const targetIncome = Number(localStorage.getItem(STORAGE_KEYS.targetIncome) || 100000);
+      const currentIncome = Number(localStorage.getItem(STORAGE_KEYS.currentIncome) || 0);
+
+      const targetInput = document.getElementById("targetIncome");
+      const currentInput = document.getElementById("currentIncome");
+
+      targetInput.value = targetIncome;
+      currentInput.value = currentIncome;
+
+      let percent = 0;
+      if (targetIncome > 0) {
+        percent = (currentIncome / targetIncome) * 100;
+      }
+      percent = clamp(percent, 0, 999);
+
+      document.getElementById("progressBarMain").style.width = percent + "%";
+      document.getElementById("progressText").textContent = percent.toFixed(1) + "% do caminho";
+
+      document.getElementById("progressValues").textContent =
+        formatCurrency(currentIncome) + " / " + formatCurrency(targetIncome);
+
+      const level = getLevel(percent);
+      document.getElementById("levelName").textContent = level.name;
+      document.getElementById("levelDescription").textContent = level.description;
+
+      updateCheckpointsUI(currentIncome);
+    }
+
+    function saveFinance() {
+      const targetIncome = Number(document.getElementById("targetIncome").value || 0);
+      const currentIncome = Number(document.getElementById("currentIncome").value || 0);
+
+      localStorage.setItem(STORAGE_KEYS.targetIncome, String(targetIncome));
+      localStorage.setItem(STORAGE_KEYS.currentIncome, String(currentIncome));
+      updateFinanceUI();
+    }
+
+    function resetFinance() {
+      localStorage.removeItem(STORAGE_KEYS.targetIncome);
+      localStorage.removeItem(STORAGE_KEYS.currentIncome);
+      updateFinanceUI();
+    }
+
+    // Checkpoints
+    function buildCheckpoints() {
+      const container = document.getElementById("checkpointsList");
+      container.innerHTML = "";
+
+      checkpointValues.forEach(value => {
+        const div = document.createElement("div");
+        div.className = "checkpoint cp-locked";
+        div.dataset.value = String(value);
+
+        const title = document.createElement("div");
+        title.className = "checkpoint-title";
+        title.textContent = formatCurrency(value) + "/mês";
+
+        const status = document.createElement("div");
+        status.className = "checkpoint-status";
+        status.innerHTML = `<span>🔒</span><span>Aguardando progresso</span>`;
+
+        div.appendChild(title);
+        div.appendChild(status);
+        container.appendChild(div);
+      });
+    }
+
+    function updateCheckpointsUI(currentIncome) {
+      const nodes = document.querySelectorAll(".checkpoint");
+      let firstLockedFound = false;
+
+      nodes.forEach(node => {
+        const value = Number(node.dataset.value);
+        const status = node.querySelector(".checkpoint-status");
+        node.classList.remove("cp-unlocked", "cp-next", "cp-locked");
+
+        if (currentIncome >= value) {
+          node.classList.add("cp-unlocked");
+          status.innerHTML = `<span>✅</span><span>Desbloqueado</span>`;
+        } else if (!firstLockedFound) {
+          node.classList.add("cp-next");
+          status.innerHTML = `<span>⭐</span><span>Próximo alvo</span>`;
+          firstLockedFound = true;
+        } else {
+          node.classList.add("cp-locked");
+          status.innerHTML = `<span>🔒</span><span>Bloqueado</span>`;
+        }
+      });
+    }
+
+    // Missões do mês
+    function defaultMissions() {
+      return [
+        { text: "", done: false },
+        { text: "", done: false },
+        { text: "", done: false },
+      ];
+    }
+
+    function loadMissions() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.missions);
+        if (!raw) return defaultMissions();
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed) || parsed.length !== 3) return defaultMissions();
+        return parsed.map(m => ({
+          text: typeof m.text === "string" ? m.text : "",
+          done: !!m.done
+        }));
+      } catch {
+        return defaultMissions();
+      }
+    }
+
+    function renderMissions() {
+      const container = document.getElementById("missionsList");
+      container.innerHTML = "";
+      const missions = loadMissions();
+
+      missions.forEach((mission, index) => {
+        const row = document.createElement("div");
+        row.className = "mission-row" + (mission.done ? " done" : "");
+        row.dataset.index = String(index);
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = mission.done;
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = mission.text;
+        input.placeholder = `Missão ${index + 1} deste mês`;
+
+        checkbox.addEventListener("change", () => {
+          mission.done = checkbox.checked;
+          if (mission.done) {
+            row.classList.add("done");
+          } else {
+            row.classList.remove("done");
+          }
+        });
+
+        input.addEventListener("input", () => {
+          mission.text = input.value;
+        });
+
+        row.appendChild(checkbox);
+        row.appendChild(input);
+        container.appendChild(row);
+      });
+
+      container.dataset.missions = JSON.stringify(missions);
+    }
+
+    function saveMissions() {
+      const container = document.getElementById("missionsList");
+      const raw = container.dataset.missions;
+      let missions = defaultMissions();
+
+      try {
+        missions = JSON.parse(raw);
+      } catch {}
+
+      // Atualizar com estado atual dos inputs
+      const rows = container.querySelectorAll(".mission-row");
+      rows.forEach(row => {
+        const idx = Number(row.dataset.index);
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        const input = row.querySelector('input[type="text"]');
+        missions[idx] = {
+          text: input.value || "",
+          done: checkbox.checked
+        };
+      });
+
+      localStorage.setItem(STORAGE_KEYS.missions, JSON.stringify(missions));
+      renderMissions();
+    }
+
+    function resetMissions() {
+      localStorage.removeItem(STORAGE_KEYS.missions);
+      renderMissions();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      buildCheckpoints();
+      updateFinanceUI();
+      renderMissions();
+
+      document.getElementById("saveFinance").addEventListener("click", saveFinance);
+      document.getElementById("resetFinance").addEventListener("click", resetFinance);
+
+      document.getElementById("saveMissions").addEventListener("click", saveMissions);
+      document.getElementById("resetMissions").addEventListener("click", resetMissions);
+
+      document.getElementById("currentIncome").addEventListener("change", saveFinance);
+      document.getElementById("targetIncome").addEventListener("change", saveFinance);
+    });
+  </script>
+</body>
+</html>
