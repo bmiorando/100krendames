@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Brian 100K/mês</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #050816;
+      color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      opacity: 0.8;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: #0b1020;
+      border-radius: 16px;
+      padding: 18px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card h2 span.emoji {
+      font-size: 1.2rem;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .row > .col {
+      flex: 1 1 260px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    input[type="number"],
+    textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 8px 10px;
+      background: #050816;
+      color: #f5f5f5;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .helper-text {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    .progress-wrapper {
+      margin-top: 10px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #15192c, #15192c);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22d3ee, #4ade80, #facc15);
+      transition: width 0.3s ease-out;
+    }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .pillar-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .pillars-grid .progress-bar-bg {
+      height: 10px;
+    }
+
+    .btn-row {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #4f46e5, #22d3ee);
+      color: #f5f5f5;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      opacity: 0.9;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      opacity: 0.6;
+      text-align: center;
+    }
+
+    a {
+      color: #22d3ee;
+      text-decoration: none;
+      font-size: 0.88rem;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>BRIAN 100K/MÊS</h1>
+      <p>Dashboard privado da minha evolução até R$ 100.000 de renda líquida mensal.</p>
+    </header>
+
+    <!-- Card 1: Progresso financeiro principal -->
+    <section class="card" id="card-finance">
+      <h2><span class="emoji">💰</span> Progresso até R$ 100.000 líquidos / mês</h2>
+
+      <div class="row">
+        <div class="col">
+          <label for="targetIncome">Meta de renda líquida (R$/mês)</label>
+          <input type="number" id="targetIncome" min="0" step="1000" />
+          <div class="helper-text">Sugestão: 100000, mas você pode ajustar se quiser mudar a meta.</div>
+        </div>
+
+        <div class="col">
+          <label for="currentIncome">Minha renda líquida atual (R$/mês)</label>
+          <input type="number" id="currentIncome" min="0" step="500" />
+          <div class="helper-text">Some todas as suas rendas líquidas atuais: negócios, serviços, etc.</div>
+        </div>
+      </div>
+
+      <div class="progress-wrapper">
+        <div class="progress-label">
+          <span id="progressText">0% do caminho</span>
+          <span id="progressValues">R$ 0 / R$ 100.000</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBarMain"></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button id="saveFinance">Salvar renda e meta</button>
+        <button id="resetFinance" style="background: #1e293b;">Zerar dados financeiros</button>
+      </div>
+    </section>
+
+    <!-- Card 2: Pilares do Homem de 100k -->
+    <section class="card">
+      <h2><span class="emoji">📊</span> Pilares do homem de 100k</h2>
+      <p class="helper-text">
+        Dê uma nota de 0 a 100 para cada pilar, com base em como você está hoje. Atualize isso 1x por semana ou quando sentir que evoluiu.
+      </p>
+
+      <div class="pillars-grid">
+        <!-- Pilar 1 -->
+        <div>
+          <div class="pillar-title">Negócio & Dinheiro</div>
+          <label for="pillarBusiness">Quão sólido está seu modelo, oferta, tráfego, lucro?</label>
+          <input type="range" id="pillarBusiness" min="0" max="100" step="1" />
+          <div class="progress-wrapper">
+            <div class="progress-label">
+              <span id="pillarBusinessLabel">0/100</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="pillarBusinessBar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pilar 2 -->
+        <div>
+          <div class="pillar-title">Habilidades</div>
+          <label for="pillarSkills">Venda, copy, gestão, análise, produto, etc.</label>
+          <input type="range" id="pillarSkills" min="0" max="100" step="1" />
+          <div class="progress-wrapper">
+            <div class="progress-label">
+              <span id="pillarSkillsLabel">0/100</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="pillarSkillsBar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pilar 3 -->
+        <div>
+          <div class="pillar-title">Rotina & Energia</div>
+          <label for="pillarRoutine">Sono, treino, foco, organização, saúde mental.</label>
+          <input type="range" id="pillarRoutine" min="0" max="100" step="1" />
+          <div class="progress-wrapper">
+            <div class="progress-label">
+              <span id="pillarRoutineLabel">0/100</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="pillarRoutineBar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button id="savePillars">Salvar pilares</button>
+        <button id="resetPillars" style="background: #1e293b;">Zerar pilares</button>
+      </div>
+    </section>
+
+    <!-- Card 3: Log do Dia -->
+    <section class="card">
+      <h2><span class="emoji">📝</span> Log do dia – “O que eu fiz hoje que me aproximou dos 100k?”</h2>
+      <label for="dailyLog">Escreva em bullets. Não precisa ser bonito, só verdadeiro.</label>
+      <textarea id="dailyLog" placeholder="- Ajustei tal campanha
+- Estudei X por 30 min
+- Criei Y oferta..."></textarea>
+
+      <div class="btn-row">
+        <button id="saveLog">Salvar log de hoje</button>
+        <button id="clearLog" style="background: #1e293b;">Limpar texto</button>
+      </div>
+      <p class="helper-text">
+        Tudo fica salvo no seu navegador (localStorage). Se trocar de dispositivo/navegador, não vem junto.
+      </p>
+    </section>
+
+    <!-- Card 4: Links internos / futura expansão -->
+    <section class="card">
+      <h2><span class="emoji">🧭</span> Outras áreas do meu mundo</h2>
+      <p class="helper-text">
+        Você pode criar outras páginas simples e linkar aqui. Exemplo:
+      </p>
+      <ul class="helper-text">
+        <li><strong>/ideias</strong> – dump de ideias de negócios, produtos, funis, melhorias.</li>
+        <li><strong>/projetos</strong> – visão dos projetos ativos e próximos passos.</li>
+        <li><strong>/leituras</strong> – lista de livros, PDFs, resumos.</li>
+      </ul>
+      <p class="helper-text">
+        Por enquanto é só um lembrete. Depois é só criar as páginas e atualizar esses links.
+      </p>
+    </section>
+
+    <footer>
+      Versão 0.1 – “Homem de 100k/mês”. Este site é só para uso pessoal.
+    </footer>
+  </div>
+
+  <script>
+    // Chaves do localStorage
+    const STORAGE_KEYS = {
+      targetIncome: "brian_target_income",
+      currentIncome: "brian_current_income",
+      pillarBusiness: "brian_pillar_business",
+      pillarSkills: "brian_pillar_skills",
+      pillarRoutine: "brian_pillar_routine",
+      dailyLog: "brian_daily_log"
+    };
+
+    function formatCurrency(value) {
+      if (isNaN(value)) value = 0;
+      return value.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        maximumFractionDigits: 0
+      });
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function updateFinanceUI() {
+      const targetIncome = Number(localStorage.getItem(STORAGE_KEYS.targetIncome) || 100000);
+      const currentIncome = Number(localStorage.getItem(STORAGE_KEYS.currentIncome) || 0);
+
+      const targetInput = document.getElementById("targetIncome");
+      const currentInput = document.getElementById("currentIncome");
+
+      targetInput.value = targetIncome;
+      currentInput.value = currentIncome;
+
+      let percent = 0;
+      if (targetIncome > 0) {
+        percent = (currentIncome / targetIncome) * 100;
+      }
+      percent = clamp(percent, 0, 999);
+
+      document.getElementById("progressBarMain").style.width = percent + "%";
+      document.getElementById("progressText").textContent = percent.toFixed(1) + "% do caminho";
+
+      document.getElementById("progressValues").textContent =
+        formatCurrency(currentIncome) + " / " + formatCurrency(targetIncome);
+    }
+
+    function saveFinance() {
+      const targetIncome = Number(document.getElementById("targetIncome").value || 0);
+      const currentIncome = Number(document.getElementById("currentIncome").value || 0);
+
+      localStorage.setItem(STORAGE_KEYS.targetIncome, String(targetIncome));
+      localStorage.setItem(STORAGE_KEYS.currentIncome, String(currentIncome));
+      updateFinanceUI();
+    }
+
+    function resetFinance() {
+      localStorage.removeItem(STORAGE_KEYS.targetIncome);
+      localStorage.removeItem(STORAGE_KEYS.currentIncome);
+      updateFinanceUI();
+    }
+
+    // Pilares
+    function updatePillarsUI() {
+      const businessVal = Number(localStorage.getItem(STORAGE_KEYS.pillarBusiness) || 0);
+      const skillsVal = Number(localStorage.getItem(STORAGE_KEYS.pillarSkills) || 0);
+      const routineVal = Number(localStorage.getItem(STORAGE_KEYS.pillarRoutine) || 0);
+
+      const pb = document.getElementById("pillarBusiness");
+      const ps = document.getElementById("pillarSkills");
+      const pr = document.getElementById("pillarRoutine");
+
+      pb.value = businessVal;
+      ps.value = skillsVal;
+      pr.value = routineVal;
+
+      document.getElementById("pillarBusinessLabel").textContent = businessVal + "/100";
+      document.getElementById("pillarSkillsLabel").textContent = skillsVal + "/100";
+      document.getElementById("pillarRoutineLabel").textContent = routineVal + "/100";
+
+      document.getElementById("pillarBusinessBar").style.width = businessVal + "%";
+      document.getElementById("pillarSkillsBar").style.width = skillsVal + "%";
+      document.getElementById("pillarRoutineBar").style.width = routineVal + "%";
+    }
+
+    function savePillars() {
+      const businessVal = Number(document.getElementById("pillarBusiness").value || 0);
+      const skillsVal = Number(document.getElementById("pillarSkills").value || 0);
+      const routineVal = Number(document.getElementById("pillarRoutine").value || 0);
+
+      localStorage.setItem(STORAGE_KEYS.pillarBusiness, String(businessVal));
+      localStorage.setItem(STORAGE_KEYS.pillarSkills, String(skillsVal));
+      localStorage.setItem(STORAGE_KEYS.pillarRoutine, String(routineVal));
+
+      updatePillarsUI();
+    }
+
+    function resetPillars() {
+      localStorage.removeItem(STORAGE_KEYS.pillarBusiness);
+      localStorage.removeItem(STORAGE_KEYS.pillarSkills);
+      localStorage.removeItem(STORAGE_KEYS.pillarRoutine);
+      updatePillarsUI();
+    }
+
+    // Log do dia
+    function updateLogUI() {
+      const text = localStorage.getItem(STORAGE_KEYS.dailyLog) || "";
+      document.getElementById("dailyLog").value = text;
+    }
+
+    function saveLog() {
+      const text = document.getElementById("dailyLog").value || "";
+      localStorage.setItem(STORAGE_KEYS.dailyLog, text);
+    }
+
+    function clearLog() {
+      document.getElementById("dailyLog").value = "";
+      localStorage.removeItem(STORAGE_KEYS.dailyLog);
+    }
+
+    // Eventos
+    document.addEventListener("DOMContentLoaded", () => {
+      // Carregar dados salvos
+      updateFinanceUI();
+      updatePillarsUI();
+      updateLogUI();
+
+      document.getElementById("saveFinance").addEventListener("click", saveFinance);
+      document.getElementById("resetFinance").addEventListener("click", resetFinance);
+
+      document.getElementById("savePillars").addEventListener("click", savePillars);
+      document.getElementById("resetPillars").addEventListener("click", resetPillars);
+
+      document.getElementById("saveLog").addEventListener("click", saveLog);
+      document.getElementById("clearLog").addEventListener("click", clearLog);
+
+      // Atualiza barras ao mexer nos sliders
+      document.getElementById("pillarBusiness").addEventListener("input", () => {
+        const v = Number(document.getElementById("pillarBusiness").value || 0);
+        localStorage.setItem(STORAGE_KEYS.pillarBusiness, String(v));
+        updatePillarsUI();
+      });
+
+      document.getElementById("pillarSkills").addEventListener("input", () => {
+        const v = Number(document.getElementById("pillarSkills").value || 0);
+        localStorage.setItem(STORAGE_KEYS.pillarSkills, String(v));
+        updatePillarsUI();
+      });
+
+      document.getElementById("pillarRoutine").addEventListener("input", () => {
+        const v = Number(document.getElementById("pillarRoutine").value || 0);
+        localStorage.setItem(STORAGE_KEYS.pillarRoutine, String(v));
+        updatePillarsUI();
+      });
+    });
+  </script>
+</body>
+</html>
