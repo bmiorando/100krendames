@@ -64,16 +64,11 @@
       opacity: 0.7;
     }
 
+    /* agora sempre 1 coluna: status em cima, missões embaixo */
     .cards-grid {
       display: grid;
-      grid-template-columns: minmax(0, 3fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 16px;
-    }
-
-    @media (min-width: 960px) {
-      .cards-grid {
-        grid-template-columns: minmax(0, 3.3fr) minmax(0, 2.1fr);
-      }
     }
 
     .card {
@@ -117,6 +112,23 @@
     }
 
     input[type="text"]::placeholder {
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 6px 8px;
+      background: #020617;
+      color: #f9fafb;
+      font-size: 0.82rem;
+      outline: none;
+      resize: vertical;
+      min-height: 48px;
+    }
+
+    textarea::placeholder {
       color: rgba(148, 163, 184, 0.7);
     }
 
@@ -262,24 +274,34 @@
 
     .mission-row {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      gap: 6px;
       padding: 6px 8px;
       border-radius: 10px;
       background: rgba(15,23,42,0.8);
       border: 1px solid rgba(148,163,184,0.3);
     }
 
-    .mission-row input[type="checkbox"] {
+    .mission-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      opacity: 0.9;
+    }
+
+    .mission-header input[type="checkbox"] {
       width: 16px;
       height: 16px;
       cursor: pointer;
     }
 
-    .mission-row input[type="text"] {
-      font-size: 0.85rem;
-      padding: 6px 8px;
-      border-radius: 8px;
+    .mission-header span {
+      flex: 1;
+    }
+
+    .mission-row textarea {
+      margin-top: 2px;
     }
 
     .mission-row.done {
@@ -288,7 +310,7 @@
       opacity: 0.97;
     }
 
-    .mission-row.done input[type="text"] {
+    .mission-row.done textarea {
       text-decoration: line-through;
       opacity: 0.9;
     }
@@ -341,6 +363,8 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+      cursor: pointer;
+      position: relative;
     }
 
     .reward-title {
@@ -351,6 +375,13 @@
     .reward-tag {
       font-size: 0.7rem;
       opacity: 0.8;
+    }
+
+    .reward-quote {
+      font-size: 0.72rem;
+      opacity: 0.8;
+      margin-top: 2px;
+      font-style: italic;
     }
 
     .reward-status {
@@ -384,6 +415,98 @@
       opacity: 0.6;
       text-align: center;
     }
+
+    /* MODAL DA CARTA */
+    .reward-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .reward-modal.open {
+      display: flex;
+    }
+
+    .reward-modal-inner {
+      position: relative;
+      width: min(360px, 90%);
+      padding: 16px;
+      border-radius: 20px;
+      background: radial-gradient(circle at top, rgba(15,23,42,0.98) 0, rgba(2,6,23,0.98) 80%);
+      border: 1px solid rgba(251,191,36,0.7);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+      overflow: hidden;
+    }
+
+    .reward-modal-inner::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('don.jpg') center/cover no-repeat;
+      opacity: 0.14;
+      filter: grayscale(100%);
+      z-index: -1;
+    }
+
+    .reward-modal-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reward-modal-tag {
+      font-size: 0.78rem;
+      opacity: 0.85;
+      margin-bottom: 10px;
+    }
+
+    .reward-modal-quote {
+      font-size: 0.86rem;
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .reward-modal-desc {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      margin-bottom: 12px;
+    }
+
+    .reward-modal-footer {
+      font-size: 0.72rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    .reward-modal-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      border: none;
+      border-radius: 999px;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+    }
+
+    .reward-modal-close:hover {
+      background: rgba(30,64,175,0.9);
+    }
+
   </style>
 </head>
 <body>
@@ -472,6 +595,7 @@
       <h2><span class="emoji">🎴</span>Cartas do Don</h2>
       <p class="helper-text">
         Cada checkpoint de renda desbloqueia uma carta. Não é só dinheiro: é identidade, respeito e calibre mental.
+        Clique em uma carta desbloqueada para ver o recado do Don.
       </p>
       <div class="cards-rewards" id="rewardsList"></div>
       <div id="rewardsFeedback" class="save-feedback"></div>
@@ -481,6 +605,20 @@
       Este painel existe para que o Brian de hoje pense como Don da própria família de 100K/mês.
       O resto do mundo chama de sorte; aqui dentro, de estratégia.
     </footer>
+  </div>
+
+  <!-- MODAL DA CARTA -->
+  <div id="rewardModal" class="reward-modal">
+    <div class="reward-modal-inner">
+      <button class="reward-modal-close" id="closeRewardModal">&times;</button>
+      <div class="reward-modal-title" id="modalRewardTitle">Carta do Don</div>
+      <div class="reward-modal-tag" id="modalRewardTag"></div>
+      <div class="reward-modal-quote" id="modalRewardQuote"></div>
+      <div class="reward-modal-desc" id="modalRewardDesc"></div>
+      <div class="reward-modal-footer">
+        Esta carta só aparece para quem cruzou esse nível de respeito.
+      </div>
+    </div>
   </div>
 
   <script>
@@ -502,13 +640,55 @@
     const checkpointValues = [5000, 10000, 20000, 40000, 60000, 80000, 100000];
 
     const rewards = [
-      { value: 5000,  title: "Carta Disciplina Fria",    tag: "Checkpoint 5K/mês" },
-      { value: 10000, title: "Carta Consistência Letal", tag: "Checkpoint 10K/mês" },
-      { value: 20000, title: "Carta Visão de Don",       tag: "Checkpoint 20K/mês" },
-      { value: 40000, title: "Carta Domínio da Praça",   tag: "Checkpoint 40K/mês" },
-      { value: 60000, title: "Carta Mente Blindada",     tag: "Checkpoint 60K/mês" },
-      { value: 80000, title: "Carta Tempo é Moeda",      tag: "Checkpoint 80K/mês" },
-      { value: 100000,title: "Carta Don da Família",     tag: "Checkpoint 100K/mês" }
+      {
+        value: 5000,
+        title: "Carta Disciplina Fria",
+        tag: "Checkpoint 5K/mês",
+        quote: "O homem que não domina seus hábitos nunca vai dominar uma praça.",
+        desc: "Chegar a 5K/mês prova que você saiu do improviso. Agora é sobre não voltar para baixo disso nunca mais."
+      },
+      {
+        value: 10000,
+        title: "Carta Consistência Letal",
+        tag: "Checkpoint 10K/mês",
+        quote: "Não é o golpe forte. É o golpe que nunca para de acertar.",
+        desc: "10K/mês é o primeiro nível em que o mundo começa a notar que você não é mais amador. Aqui você decide se é fogo de palha ou permanência."
+      },
+      {
+        value: 20000,
+        title: "Carta Visão de Don",
+        tag: "Checkpoint 20K/mês",
+        quote: "Quem só olha o dia de hoje, morre pobre. Quem enxerga 10 anos, escolhe as guerras certas.",
+        desc: "Em 20K/mês você não está só ganhando mais. Você começa a comprar tempo, paz mental e posição na mesa."
+      },
+      {
+        value: 40000,
+        title: "Carta Domínio da Praça",
+        tag: "Checkpoint 40K/mês",
+        quote: "Quando o dinheiro te obedece, você para de correr atrás de migalha.",
+        desc: "40K/mês é quando suas decisões ecoam na sua família, não mais só em você. Erros doem mais. Acertos também."
+      },
+      {
+        value: 60000,
+        title: "Carta Mente Blindada",
+        tag: "Checkpoint 60K/mês",
+        quote: "Metade da riqueza é não se sabotar quando tudo começa a dar certo.",
+        desc: "Chegar aqui exige mais cabeça do que talento. Quem não sabe ficar rico em silêncio, volta rápido pro zero."
+      },
+      {
+        value: 80000,
+        title: "Carta Tempo é Moeda",
+        tag: "Checkpoint 80K/mês",
+        quote: "O homem rico de verdade compra tempo, não brinquedo.",
+        desc: "80K/mês mostra que você tem opção. Agora cada sim errado custa caro demais. Tempo vira seu ativo principal."
+      },
+      {
+        value: 100000,
+        title: "Carta Don da Família",
+        tag: "Checkpoint 100K/mês",
+        quote: "Você não corre mais atrás do dinheiro. Ele circula em torno das suas decisões.",
+        desc: "100K/mês fecha um ciclo. Não é fim de jogo. É o começo de um jogo onde você escolhe em que mundos quer jogar."
+      }
     ];
 
     function formatCurrency(value) {
@@ -610,14 +790,22 @@
         row.className = "mission-row" + (mission.done ? " done" : "");
         row.dataset.index = String(index);
 
+        const header = document.createElement("div");
+        header.className = "mission-header";
+
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = mission.done;
 
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = mission.text;
-        input.placeholder = `Missão ${index + 1}`;
+        const label = document.createElement("span");
+        label.textContent = `Missão ${index + 1}`;
+
+        header.appendChild(checkbox);
+        header.appendChild(label);
+
+        const textarea = document.createElement("textarea");
+        textarea.value = mission.text;
+        textarea.placeholder = `Descreva a missão ${index + 1}...`;
 
         checkbox.addEventListener("change", () => {
           mission.done = checkbox.checked;
@@ -625,12 +813,12 @@
           else row.classList.remove("done");
         });
 
-        input.addEventListener("input", () => {
-          mission.text = input.value;
+        textarea.addEventListener("input", () => {
+          mission.text = textarea.value;
         });
 
-        row.appendChild(checkbox);
-        row.appendChild(input);
+        row.appendChild(header);
+        row.appendChild(textarea);
         container.appendChild(row);
       });
 
@@ -699,14 +887,28 @@
         tag.className = "reward-tag";
         tag.textContent = r.tag;
 
+        const quote = document.createElement("div");
+        quote.className = "reward-quote";
+        quote.textContent = `"${r.quote}"`;
+
         const status = document.createElement("div");
         status.className = "reward-status";
         status.innerHTML = `<span>🔒</span><span>Carta ainda não desbloqueada</span>`;
 
         card.appendChild(title);
         card.appendChild(tag);
+        card.appendChild(quote);
         card.appendChild(status);
         container.appendChild(card);
+
+        card.addEventListener("click", () => {
+          const currentIncome = Number(localStorage.getItem(STORAGE_KEYS.currentIncome) || 0);
+          if (currentIncome >= r.value) {
+            openRewardModal(r);
+          } else {
+            showFeedback("rewardsFeedback", "Primeiro cruze esse checkpoint para ver o recado do Don.");
+          }
+        });
       });
     }
 
@@ -727,19 +929,36 @@
       });
     }
 
+    function openRewardModal(reward) {
+      const modal = document.getElementById("rewardModal");
+      document.getElementById("modalRewardTitle").textContent = reward.title;
+      document.getElementById("modalRewardTag").textContent = reward.tag;
+      document.getElementById("modalRewardQuote").textContent = `"${reward.quote}"`;
+      document.getElementById("modalRewardDesc").textContent = reward.desc;
+      modal.classList.add("open");
+    }
+
+    function closeRewardModal() {
+      const modal = document.getElementById("rewardModal");
+      modal.classList.remove("open");
+    }
+
     function trackMaxIncomeAndNotify(currentIncome) {
       const prevMax = Number(localStorage.getItem(STORAGE_KEYS.maxIncomeEver) || 0);
       if (currentIncome > prevMax) {
         localStorage.setItem(STORAGE_KEYS.maxIncomeEver, String(currentIncome));
-        const notifiedRaw = localStorage.getItem(STORAGE_KEYS.rewardsNotified) || "[]";
         let notified;
-        try { notified = JSON.parse(notifiedRaw); } catch { notified = []; }
+        try {
+          notified = JSON.parse(localStorage.getItem(STORAGE_KEYS.rewardsNotified) || "[]");
+        } catch {
+          notified = [];
+        }
         if (!Array.isArray(notified)) notified = [];
 
         const newlyUnlocked = rewards.filter(r => currentIncome >= r.value && !notified.includes(r.value));
         if (newlyUnlocked.length > 0) {
           const first = newlyUnlocked[0];
-          showFeedback("rewardsFeedback", `Nova carta desbloqueada: ${first.title}. O respeito da família aumentou.`);
+          openRewardModal(first);
           notified.push(first.value);
           localStorage.setItem(STORAGE_KEYS.rewardsNotified, JSON.stringify(notified));
         }
@@ -793,9 +1012,9 @@
       rows.forEach(row => {
         const idx = Number(row.dataset.index);
         const checkbox = row.querySelector('input[type="checkbox"]');
-        const input = row.querySelector('input[type="text"]');
+        const textarea = row.querySelector('textarea');
         missions[idx] = {
-          text: input.value || "",
+          text: textarea.value || "",
           done: checkbox.checked
         };
       });
@@ -817,8 +1036,7 @@
       renderMissions();
     }
 
-    // ====== SUPABASE: salvar/carregar ======
-
+    // ====== SUPABASE ======
     function buildStateObject() {
       const targetIncome = Number(localStorage.getItem(STORAGE_KEYS.targetIncome) || 100000);
       const currentIncome = Number(localStorage.getItem(STORAGE_KEYS.currentIncome) || 0);
@@ -908,12 +1126,10 @@
       renderMissions();
     }
 
-    // ====== Eventos ======
     document.addEventListener("DOMContentLoaded", () => {
       buildCheckpoints();
       buildRewards();
 
-      // Primeiro tenta carregar da nuvem
       loadStateFromSupabase();
 
       document.getElementById("saveFinance").addEventListener("click", async () => {
@@ -948,6 +1164,11 @@
       document.getElementById("targetIncome").addEventListener("change", async () => {
         saveFinanceLocal();
         await saveStateToSupabase();
+      });
+
+      document.getElementById("closeRewardModal").addEventListener("click", closeRewardModal);
+      document.getElementById("rewardModal").addEventListener("click", (e) => {
+        if (e.target.id === "rewardModal") closeRewardModal();
       });
     });
   </script>
