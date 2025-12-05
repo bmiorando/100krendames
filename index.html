@@ -15,12 +15,20 @@
     body {
       margin: 0;
       padding: 0;
-      background: radial-gradient(circle at top, #1f2933 0, #020617 45%, #02040a 100%);
+      background: #000 url('don.jpg') center/cover no-repeat fixed;
       color: #f9fafb;
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: -1;
+    }
+
     .container {
-      max-width: 960px;
+      max-width: 1000px;
       margin: 0 auto;
       padding: 24px 16px 40px;
     }
@@ -44,7 +52,7 @@
 
     header p {
       margin: 8px 0 0;
-      opacity: 0.85;
+      opacity: 0.9;
       font-size: 0.95rem;
     }
 
@@ -62,18 +70,18 @@
       gap: 16px;
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 960px) {
       .cards-grid {
         grid-template-columns: minmax(0, 3.3fr) minmax(0, 2.1fr);
       }
     }
 
     .card {
-      background: rgba(10, 15, 25, 0.96);
+      background: rgba(10, 15, 25, 0.94);
       border-radius: 18px;
       padding: 18px 16px 16px;
       border: 1px solid rgba(148, 163, 184, 0.28);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.8);
       backdrop-filter: blur(14px);
     }
 
@@ -86,7 +94,7 @@
     }
 
     .card h2 span.emoji {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
     }
 
     label {
@@ -195,7 +203,6 @@
       opacity: 0.9;
     }
 
-    /* Checkpoints */
     .checkpoints-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -246,7 +253,6 @@
       color: rgba(148,163,184,0.85);
     }
 
-    /* Missões */
     .missions-list {
       display: flex;
       flex-direction: column;
@@ -319,6 +325,59 @@
       opacity: 0.95;
     }
 
+    .cards-rewards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .reward-card {
+      border-radius: 14px;
+      padding: 10px;
+      background: radial-gradient(circle at top, #111827 0, #020617 80%);
+      border: 1px solid rgba(148,163,184,0.5);
+      font-size: 0.78rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .reward-title {
+      font-weight: 600;
+      font-size: 0.82rem;
+    }
+
+    .reward-tag {
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .reward-status {
+      margin-top: 4px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .reward-unlocked {
+      border-color: rgba(34,197,94,0.95);
+      box-shadow: 0 0 12px rgba(22,163,74,0.35);
+    }
+
+    .reward-unlocked .reward-status {
+      color: #4ade80;
+    }
+
+    .reward-locked .reward-status {
+      color: rgba(148,163,184,0.85);
+    }
+
+    .reward-unlocked .reward-title {
+      color: #fbbf24;
+    }
+
     footer {
       margin-top: 22px;
       font-size: 0.78rem;
@@ -336,7 +395,7 @@
     </header>
 
     <div class="cards-grid">
-      <!-- Card principal: status -->
+      <!-- Status -->
       <section class="card">
         <h2><span class="emoji">🦅</span>Status da família</h2>
 
@@ -380,51 +439,77 @@
         </div>
       </section>
 
-      <!-- Card: missões do mês -->
+      <!-- Missões veículo 10K -->
       <section class="card">
-        <h2><span class="emoji">🎯</span>Ordens do Don – mês</h2>
+        <h2><span class="emoji">💼</span>Missões do veículo de 10K</h2>
         <p class="helper-text">
-          Três ordens que, se cumpridas este mês, aumentam o respeito da família e aproximam do próximo nível.
+          Fase atual: descobrir e validar um novo veículo que possa, sozinho, gerar 10–30K/mês como complemento.
+          Nada de escalar à força o negócio atual. Aqui é MVP, teste e validação.
         </p>
 
-        <div class="missions-list" id="missionsList">
-          <!-- preenchido via JS -->
-        </div>
+        <div class="missions-list" id="missionsList"></div>
 
         <div id="missionsFeedback" class="save-feedback"></div>
 
         <div class="btn-row">
-          <button id="saveMissions">Registrar ordens</button>
+          <button id="saveMissions">Registrar missões</button>
           <button id="resetMissions" class="secondary">Limpar tudo</button>
         </div>
       </section>
     </div>
 
-    <!-- Card full width: checkpoints -->
+    <!-- Checkpoints -->
     <section class="card" style="margin-top:16px;">
       <h2><span class="emoji">📈</span>Checkpoints de respeito na praça</h2>
       <p class="helper-text">
-        Cada cifra é um ponto de não-retorno. Passou dali, o padrão de vida e de jogo do Don não volta mais para trás.
+        Cada cifra é um ponto de não-retorno. Passou dali, o padrão de jogo do Don não volta mais para trás.
       </p>
+      <div class="checkpoints-list" id="checkpointsList"></div>
+    </section>
 
-      <div class="checkpoints-list" id="checkpointsList">
-        <!-- preenchido via JS -->
-      </div>
+    <!-- Cartas -->
+    <section class="card" style="margin-top:12px;">
+      <h2><span class="emoji">🎴</span>Cartas do Don</h2>
+      <p class="helper-text">
+        Cada checkpoint de renda desbloqueia uma carta. Não é só dinheiro: é identidade, respeito e calibre mental.
+      </p>
+      <div class="cards-rewards" id="rewardsList"></div>
+      <div id="rewardsFeedback" class="save-feedback"></div>
     </section>
 
     <footer>
-      Este painel existe para que o Brian de hoje pense como Don da própria família de 100K/mês. O resto do mundo chama de sorte; aqui dentro, de estratégia.
+      Este painel existe para que o Brian de hoje pense como Don da própria família de 100K/mês.
+      O resto do mundo chama de sorte; aqui dentro, de estratégia.
     </footer>
   </div>
 
   <script>
+    /* ========= CONFIGURAR AQUI ========= */
+    const SUPABASE_URL = "https://zocynwaideygqrofguhy.supabase.co"; // <-- TROCAR
+    const SUPABASE_ANON_KEY = "sb_publishable__oUfIDejQtH-_3W9iNJgcw_J-8YdXjO";        // <-- TROCAR
+    const SUPABASE_TABLE = "painel_don";
+    const SUPABASE_ROW_ID = 1;
+    /* =================================== */
+
     const STORAGE_KEYS = {
       targetIncome: "brian_mafia_target_income_v1",
       currentIncome: "brian_mafia_current_income_v1",
-      missions: "brian_mafia_monthly_missions_v1"
+      missions: "brian_mafia_missions_vehicle10k_v1",
+      maxIncomeEver: "brian_mafia_max_income_ever_v1",
+      rewardsNotified: "brian_mafia_rewards_notified_v1"
     };
 
     const checkpointValues = [5000, 10000, 20000, 40000, 60000, 80000, 100000];
+
+    const rewards = [
+      { value: 5000,  title: "Carta Disciplina Fria",    tag: "Checkpoint 5K/mês" },
+      { value: 10000, title: "Carta Consistência Letal", tag: "Checkpoint 10K/mês" },
+      { value: 20000, title: "Carta Visão de Don",       tag: "Checkpoint 20K/mês" },
+      { value: 40000, title: "Carta Domínio da Praça",   tag: "Checkpoint 40K/mês" },
+      { value: 60000, title: "Carta Mente Blindada",     tag: "Checkpoint 60K/mês" },
+      { value: 80000, title: "Carta Tempo é Moeda",      tag: "Checkpoint 80K/mês" },
+      { value: 100000,title: "Carta Don da Família",     tag: "Checkpoint 100K/mês" }
+    ];
 
     function formatCurrency(value) {
       if (isNaN(value)) value = 0;
@@ -480,56 +565,78 @@
       el.classList.add("visible");
       setTimeout(() => {
         el.classList.remove("visible");
-      }, 2000);
+      }, 2300);
     }
 
-    function updateFinanceUI() {
-      const targetIncome = Number(localStorage.getItem(STORAGE_KEYS.targetIncome) || 100000);
-      const currentIncome = Number(localStorage.getItem(STORAGE_KEYS.currentIncome) || 0);
+    function defaultMissions() {
+      return [
+        {
+          text: "Listar 3 veículos de negócio escaláveis que fazem sentido pra mim (modelo, ticket, margem).",
+          done: false
+        },
+        {
+          text: "Escolher 1 veículo e definir um MVP simples para validar (oferta mínima, página simples, tráfego de teste).",
+          done: false
+        },
+        {
+          text: "Rodar 1 teste real (anúncio/campanha) e registrar números: cliques, leads, vendas, percepção de potencial.",
+          done: false
+        }
+      ];
+    }
 
-      const targetInput = document.getElementById("targetIncome");
-      const currentInput = document.getElementById("currentIncome");
-
-      targetInput.value = targetIncome;
-      currentInput.value = currentIncome;
-
-      let percent = 0;
-      if (targetIncome > 0) {
-        percent = (currentIncome / targetIncome) * 100;
+    function loadMissionsLocal() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.missions);
+        if (!raw) return defaultMissions();
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed) || parsed.length !== 3) return defaultMissions();
+        return parsed.map(m => ({
+          text: typeof m.text === "string" ? m.text : "",
+          done: !!m.done
+        }));
+      } catch {
+        return defaultMissions();
       }
-      percent = clamp(percent, 0, 999);
-
-      document.getElementById("progressBarMain").style.width = percent + "%";
-      document.getElementById("progressText").textContent = percent.toFixed(1) + "% do caminho";
-
-      document.getElementById("progressValues").textContent =
-        formatCurrency(currentIncome) + " / " + formatCurrency(targetIncome);
-
-      const level = getLevel(percent);
-      document.getElementById("levelName").textContent = level.name;
-      document.getElementById("levelDescription").textContent = level.description;
-
-      updateCheckpointsUI(currentIncome);
     }
 
-    function saveFinance() {
-      const targetIncome = Number(document.getElementById("targetIncome").value || 0);
-      const currentIncome = Number(document.getElementById("currentIncome").value || 0);
+    function renderMissions() {
+      const container = document.getElementById("missionsList");
+      container.innerHTML = "";
+      const missions = loadMissionsLocal();
 
-      localStorage.setItem(STORAGE_KEYS.targetIncome, String(targetIncome));
-      localStorage.setItem(STORAGE_KEYS.currentIncome, String(currentIncome));
-      updateFinanceUI();
-      showFeedback("saveFeedback", "Tributo registrado. O Don sabe onde está.");
+      missions.forEach((mission, index) => {
+        const row = document.createElement("div");
+        row.className = "mission-row" + (mission.done ? " done" : "");
+        row.dataset.index = String(index);
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = mission.done;
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = mission.text;
+        input.placeholder = `Missão ${index + 1}`;
+
+        checkbox.addEventListener("change", () => {
+          mission.done = checkbox.checked;
+          if (mission.done) row.classList.add("done");
+          else row.classList.remove("done");
+        });
+
+        input.addEventListener("input", () => {
+          mission.text = input.value;
+        });
+
+        row.appendChild(checkbox);
+        row.appendChild(input);
+        container.appendChild(row);
+      });
+
+      container.dataset.missions = JSON.stringify(missions);
     }
 
-    function resetFinance() {
-      localStorage.removeItem(STORAGE_KEYS.targetIncome);
-      localStorage.removeItem(STORAGE_KEYS.currentIncome);
-      updateFinanceUI();
-      showFeedback("saveFeedback", "Registros apagados. O livro da família foi limpo.");
-    }
-
-    // Checkpoints
     function buildCheckpoints() {
       const container = document.getElementById("checkpointsList");
       container.innerHTML = "";
@@ -576,71 +683,104 @@
       });
     }
 
-    // Missões do mês
-    function defaultMissions() {
-      return [
-        { text: "", done: false },
-        { text: "", done: false },
-        { text: "", done: false },
-      ];
+    function buildRewards() {
+      const container = document.getElementById("rewardsList");
+      container.innerHTML = "";
+      rewards.forEach(r => {
+        const card = document.createElement("div");
+        card.className = "reward-card reward-locked";
+        card.dataset.value = String(r.value);
+
+        const title = document.createElement("div");
+        title.className = "reward-title";
+        title.textContent = r.title;
+
+        const tag = document.createElement("div");
+        tag.className = "reward-tag";
+        tag.textContent = r.tag;
+
+        const status = document.createElement("div");
+        status.className = "reward-status";
+        status.innerHTML = `<span>🔒</span><span>Carta ainda não desbloqueada</span>`;
+
+        card.appendChild(title);
+        card.appendChild(tag);
+        card.appendChild(status);
+        container.appendChild(card);
+      });
     }
 
-    function loadMissions() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEYS.missions);
-        if (!raw) return defaultMissions();
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed) || parsed.length !== 3) return defaultMissions();
-        return parsed.map(m => ({
-          text: typeof m.text === "string" ? m.text : "",
-          done: !!m.done
-        }));
-      } catch {
-        return defaultMissions();
+    function updateRewardsUI(currentIncome) {
+      const cards = document.querySelectorAll(".reward-card");
+      cards.forEach(card => {
+        const val = Number(card.dataset.value);
+        const status = card.querySelector(".reward-status");
+        card.classList.remove("reward-unlocked", "reward-locked");
+
+        if (currentIncome >= val) {
+          card.classList.add("reward-unlocked");
+          status.innerHTML = `<span>✅</span><span>Carta desbloqueada</span>`;
+        } else {
+          card.classList.add("reward-locked");
+          status.innerHTML = `<span>🔒</span><span>Carta ainda não desbloqueada</span>`;
+        }
+      });
+    }
+
+    function trackMaxIncomeAndNotify(currentIncome) {
+      const prevMax = Number(localStorage.getItem(STORAGE_KEYS.maxIncomeEver) || 0);
+      if (currentIncome > prevMax) {
+        localStorage.setItem(STORAGE_KEYS.maxIncomeEver, String(currentIncome));
+        const notifiedRaw = localStorage.getItem(STORAGE_KEYS.rewardsNotified) || "[]";
+        let notified;
+        try { notified = JSON.parse(notifiedRaw); } catch { notified = []; }
+        if (!Array.isArray(notified)) notified = [];
+
+        const newlyUnlocked = rewards.filter(r => currentIncome >= r.value && !notified.includes(r.value));
+        if (newlyUnlocked.length > 0) {
+          const first = newlyUnlocked[0];
+          showFeedback("rewardsFeedback", `Nova carta desbloqueada: ${first.title}. O respeito da família aumentou.`);
+          notified.push(first.value);
+          localStorage.setItem(STORAGE_KEYS.rewardsNotified, JSON.stringify(notified));
+        }
       }
     }
 
-    function renderMissions() {
-      const container = document.getElementById("missionsList");
-      container.innerHTML = "";
-      const missions = loadMissions();
+    function updateFinanceUI() {
+      const targetIncome = Number(localStorage.getItem(STORAGE_KEYS.targetIncome) || 100000);
+      const currentIncome = Number(localStorage.getItem(STORAGE_KEYS.currentIncome) || 0);
 
-      missions.forEach((mission, index) => {
-        const row = document.createElement("div");
-        row.className = "mission-row" + (mission.done ? " done" : "");
-        row.dataset.index = String(index);
+      document.getElementById("targetIncome").value = targetIncome;
+      document.getElementById("currentIncome").value = currentIncome;
 
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = mission.done;
+      let percent = 0;
+      if (targetIncome > 0) percent = (currentIncome / targetIncome) * 100;
+      percent = clamp(percent, 0, 999);
 
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = mission.text;
-        input.placeholder = `Ordem ${index + 1} deste mês`;
+      document.getElementById("progressBarMain").style.width = percent + "%";
+      document.getElementById("progressText").textContent = percent.toFixed(1) + "% do caminho";
+      document.getElementById("progressValues").textContent =
+        formatCurrency(currentIncome) + " / " + formatCurrency(targetIncome);
 
-        checkbox.addEventListener("change", () => {
-          mission.done = checkbox.checked;
-          if (mission.done) {
-            row.classList.add("done");
-          } else {
-            row.classList.remove("done");
-          }
-        });
+      const level = getLevel(percent);
+      document.getElementById("levelName").textContent = level.name;
+      document.getElementById("levelDescription").textContent = level.description;
 
-        input.addEventListener("input", () => {
-          mission.text = input.value;
-        });
-
-        row.appendChild(checkbox);
-        row.appendChild(input);
-        container.appendChild(row);
-      });
-
-      container.dataset.missions = JSON.stringify(missions);
+      updateCheckpointsUI(currentIncome);
+      updateRewardsUI(currentIncome);
+      trackMaxIncomeAndNotify(currentIncome);
     }
 
-    function saveMissions() {
+    function saveFinanceLocal() {
+      const targetIncome = Number(document.getElementById("targetIncome").value || 0);
+      const currentIncome = Number(document.getElementById("currentIncome").value || 0);
+
+      localStorage.setItem(STORAGE_KEYS.targetIncome, String(targetIncome));
+      localStorage.setItem(STORAGE_KEYS.currentIncome, String(currentIncome));
+      updateFinanceUI();
+    }
+
+    function saveMissionsLocal() {
       const container = document.getElementById("missionsList");
       const raw = container.dataset.missions;
       let missions = defaultMissions();
@@ -662,28 +802,153 @@
 
       localStorage.setItem(STORAGE_KEYS.missions, JSON.stringify(missions));
       renderMissions();
-      showFeedback("missionsFeedback", "Ordens registradas. A família sabe o que precisa fazer.");
     }
 
-    function resetMissions() {
+    function resetFinanceLocal() {
+      localStorage.removeItem(STORAGE_KEYS.targetIncome);
+      localStorage.removeItem(STORAGE_KEYS.currentIncome);
+      localStorage.removeItem(STORAGE_KEYS.maxIncomeEver);
+      localStorage.removeItem(STORAGE_KEYS.rewardsNotified);
+      updateFinanceUI();
+    }
+
+    function resetMissionsLocal() {
       localStorage.removeItem(STORAGE_KEYS.missions);
       renderMissions();
-      showFeedback("missionsFeedback", "Ordens apagadas. Novo plano para o Don.");
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      buildCheckpoints();
+    // ====== SUPABASE: salvar/carregar ======
+
+    function buildStateObject() {
+      const targetIncome = Number(localStorage.getItem(STORAGE_KEYS.targetIncome) || 100000);
+      const currentIncome = Number(localStorage.getItem(STORAGE_KEYS.currentIncome) || 0);
+      const missions = loadMissionsLocal();
+      const maxIncomeEver = Number(localStorage.getItem(STORAGE_KEYS.maxIncomeEver) || currentIncome);
+      let rewardsNotified = [];
+      try {
+        rewardsNotified = JSON.parse(localStorage.getItem(STORAGE_KEYS.rewardsNotified) || "[]");
+        if (!Array.isArray(rewardsNotified)) rewardsNotified = [];
+      } catch {
+        rewardsNotified = [];
+      }
+      return {
+        v: 1,
+        targetIncome,
+        currentIncome,
+        missions,
+        maxIncomeEver,
+        rewardsNotified
+      };
+    }
+
+    async function saveStateToSupabase() {
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+      const state = buildStateObject();
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates"
+          },
+          body: JSON.stringify({
+            id: SUPABASE_ROW_ID,
+            state_json: state
+          })
+        });
+      } catch (e) {
+        console.error("Erro ao salvar no Supabase", e);
+      }
+    }
+
+    async function loadStateFromSupabase() {
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+        updateFinanceUI();
+        renderMissions();
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=eq.${SUPABASE_ROW_ID}&select=state_json&limit=1`,
+          {
+            headers: {
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].state_json) {
+          const state = data[0].state_json;
+          if (typeof state.targetIncome === "number") {
+            localStorage.setItem(STORAGE_KEYS.targetIncome, String(state.targetIncome));
+          }
+          if (typeof state.currentIncome === "number") {
+            localStorage.setItem(STORAGE_KEYS.currentIncome, String(state.currentIncome));
+          }
+          if (Array.isArray(state.missions)) {
+            localStorage.setItem(STORAGE_KEYS.missions, JSON.stringify(state.missions));
+          }
+          if (typeof state.maxIncomeEver === "number") {
+            localStorage.setItem(STORAGE_KEYS.maxIncomeEver, String(state.maxIncomeEver));
+          }
+          if (Array.isArray(state.rewardsNotified)) {
+            localStorage.setItem(STORAGE_KEYS.rewardsNotified, JSON.stringify(state.rewardsNotified));
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao carregar do Supabase", e);
+      }
+
       updateFinanceUI();
       renderMissions();
+    }
 
-      document.getElementById("saveFinance").addEventListener("click", saveFinance);
-      document.getElementById("resetFinance").addEventListener("click", resetFinance);
+    // ====== Eventos ======
+    document.addEventListener("DOMContentLoaded", () => {
+      buildCheckpoints();
+      buildRewards();
 
-      document.getElementById("saveMissions").addEventListener("click", saveMissions);
-      document.getElementById("resetMissions").addEventListener("click", resetMissions);
+      // Primeiro tenta carregar da nuvem
+      loadStateFromSupabase();
 
-      document.getElementById("currentIncome").addEventListener("change", saveFinance);
-      document.getElementById("targetIncome").addEventListener("change", saveFinance);
+      document.getElementById("saveFinance").addEventListener("click", async () => {
+        saveFinanceLocal();
+        await saveStateToSupabase();
+        showFeedback("saveFeedback", "Tributo registrado e sincronizado com a família.");
+      });
+
+      document.getElementById("resetFinance").addEventListener("click", async () => {
+        resetFinanceLocal();
+        await saveStateToSupabase();
+        showFeedback("saveFeedback", "Registros apagados e atualizados na nuvem.");
+      });
+
+      document.getElementById("saveMissions").addEventListener("click", async () => {
+        saveMissionsLocal();
+        await saveStateToSupabase();
+        showFeedback("missionsFeedback", "Missões registradas e sincronizadas.");
+      });
+
+      document.getElementById("resetMissions").addEventListener("click", async () => {
+        resetMissionsLocal();
+        await saveStateToSupabase();
+        showFeedback("missionsFeedback", "Missões apagadas em todos os dispositivos.");
+      });
+
+      document.getElementById("currentIncome").addEventListener("change", async () => {
+        saveFinanceLocal();
+        await saveStateToSupabase();
+      });
+
+      document.getElementById("targetIncome").addEventListener("change", async () => {
+        saveFinanceLocal();
+        await saveStateToSupabase();
+      });
     });
   </script>
 </body>
