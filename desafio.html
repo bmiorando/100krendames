@@ -211,18 +211,21 @@ function renderStars(){
   }
 }
 
-async function saveDay(){
-await sb.from("challenge_days").upsert({
-  user_id:user.id,
-  day_number:selectedDay,
-  day_date:new Date(CHALLENGE_START.getTime()+((selectedDay-1)*86400000)),
-  score: Number(score),
-  did_create_new: document.getElementById("did_create").checked,
-  created_note: document.getElementById("note").value
-}, { onConflict: "user_id,day_number" });
+  async function saveDay(){
+  await sb.from("challenge_days").upsert({
+    user_id: user.id,
+    day_number: selectedDay,
+    day_date: new Date(CHALLENGE_START.getTime()+((selectedDay-1)*86400000)),
+    score: Number(score),
+    did_create_new: document.getElementById("did_create").checked,
+    created_note: document.getElementById("note").value
+  }, { onConflict: "user_id,day_number" });
 
+  document.getElementById("modal").style.display = "none";
+  load();
+}
 
-  async function resetAll(){
+async function resetAll(){
   if(!confirm("Tem certeza que deseja apagar TODOS os dados do desafio?")) return;
 
   const { error } = await sb
@@ -239,8 +242,10 @@ await sb.from("challenge_days").upsert({
   renderGrid();
   document.getElementById("dayNow").innerText = todayNumber();
   document.getElementById("greens").innerText = "0";
+  document.getElementById("streak").innerText = "–";
   alert("Dados zerados.");
 }
+
 </script>
 
 </body>
