@@ -144,8 +144,14 @@ user = { id: "desafio-180" };
 load();
 
 function todayNumber(){
-  const t = new Date(); t.setHours(0,0,0,0);
-  return Math.min(180, Math.floor((t - CHALLENGE_START)/86400000)+1);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const start = new Date(CHALLENGE_START);
+  start.setHours(0,0,0,0);
+
+  const diff = Math.round((today - start) / 86400000);
+  return Math.min(180, Math.max(1, diff + 1));
 }
 
 async function load(){
