@@ -102,6 +102,7 @@
 </div>
 
 <button onclick="openToday()">MARCAR HOJE</button>
+<button onclick="resetAll()" style="background:#e74c3c;margin-left:10px">ZERAR DADOS</button>
 
 <h3 style="margin-top:30px">Histórico</h3>
 <div class="days" id="grid"></div>
@@ -211,16 +212,34 @@ function renderStars(){
 }
 
 async function saveDay(){
-  await sb.from("challenge_days").upsert({
-  user_id: user.id,
-  day_number: selectedDay,
-  day_date: new Date(CHALLENGE_START.getTime()+((selectedDay-1)*86400000)),
+await sb.from("challenge_days").upsert({
+  user_id:user.id,
+  day_number:selectedDay,
+  day_date:new Date(CHALLENGE_START.getTime()+((selectedDay-1)*86400000)),
   score: Number(score),
   did_create_new: document.getElementById("did_create").checked,
   created_note: document.getElementById("note").value
-});
-  document.getElementById("modal").style.display="none";
-  load();
+}, { onConflict: "user_id,day_number" });
+
+
+  async function resetAll(){
+  if(!confirm("Tem certeza que deseja apagar TODOS os dados do desafio?")) return;
+
+  const { error } = await sb
+    .from("challenge_days")
+    .delete()
+    .eq("user_id", user.id);
+
+  if(error){
+    alert("Erro ao zerar: " + error.message);
+    return;
+  }
+
+  days = {};
+  renderGrid();
+  document.getElementById("dayNow").innerText = todayNumber();
+  document.getElementById("greens").innerText = "0";
+  alert("Dados zerados.");
 }
 </script>
 
