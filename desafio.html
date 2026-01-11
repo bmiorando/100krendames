@@ -140,15 +140,8 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let user, days = {}, selectedDay = null, score = 3;
 
 /* INIT */
-(async()=>{
-  const { data } = await sb.auth.getSession();
-  user = data.session?.user;
-  if(!user){
-    alert("Faça login no Supabase Auth");
-    return;
-  }
-  load();
-})();
+user = { id: "desafio-180" };
+load();
 
 function todayNumber(){
   const t = new Date(); t.setHours(0,0,0,0);
