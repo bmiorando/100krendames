@@ -1,21 +1,229 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard 180</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Desafio 180 Dias</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
   <style>
-    body{font-family:Arial, sans-serif; padding:40px; background:#0b1220; color:#e7eefc;}
-    .box{max-width:720px; margin:auto; border:1px solid rgba(255,255,255,.15); border-radius:16px; padding:20px;}
-    h1{margin:0 0 10px}
-    p{color:rgba(231,238,252,.75)}
-    code{background:rgba(255,255,255,.07); padding:4px 8px; border-radius:8px;}
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:#0b1220;
+      color:#e7eefc;
+      padding:20px;
+    }
+    h1{margin-bottom:5px}
+    .muted{opacity:.7;font-size:14px}
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:12px;
+      margin:20px 0;
+    }
+    .card{
+      background:#111a2e;
+      border-radius:12px;
+      padding:16px;
+    }
+    .big{font-size:22px;font-weight:bold}
+
+    button{
+      background:#1f8ef1;
+      border:none;
+      color:#fff;
+      padding:10px 14px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    .days{
+      display:grid;
+      grid-template-columns:repeat(18,1fr);
+      gap:6px;
+    }
+    .day{
+      background:#1a2440;
+      border-radius:6px;
+      height:28px;
+      font-size:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+    }
+    .g{background:#2ecc71}
+    .y{background:#f1c40f;color:#000}
+    .r{background:#e74c3c}
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+    }
+    .modal-box{
+      background:#0f172a;
+      padding:20px;
+      border-radius:12px;
+      width:320px;
+    }
+    .stars span{
+      font-size:22px;
+      cursor:pointer;
+    }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>Dashboard 180 — OK ✅</h1>
-    <p>Se você está vendo essa tela, o arquivo <code>dashboard-180.html</code> foi publicado com sucesso.</p>
+
+<h1>Desafio 180 Dias</h1>
+<div class="muted">Criar coisas todos os dias</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="muted">Dia atual</div>
+    <div class="big" id="dayNow">–</div>
   </div>
+  <div class="card">
+    <div class="muted">Dias verdes (4–5)</div>
+    <div class="big" id="greens">–</div>
+  </div>
+  <div class="card">
+    <div class="muted">Streak criação</div>
+    <div class="big" id="streak">–</div>
+  </div>
+</div>
+
+<button onclick="openToday()">MARCAR HOJE</button>
+
+<h3 style="margin-top:30px">Histórico</h3>
+<div class="days" id="grid"></div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle"></h3>
+
+    <div class="stars" id="stars"></div>
+
+    <label>
+      <input type="checkbox" id="did_create">
+      Criei algo hoje
+    </label>
+
+    <input id="note" placeholder="O que eu criei?"
+      style="width:100%;margin-top:8px;padding:8px">
+
+    <div style="margin-top:12px;text-align:right">
+      <button onclick="saveDay()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* CONFIG */
+const SUPABASE_URL = "https://zocynwaideygqrofguhy.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable__oUfIDejQtH-_3W9iNJgcw_J-8YdXjO";
+
+const CHALLENGE_START = new Date("2026-01-11"); // ALTERE
+CHALLENGE_START.setHours(0,0,0,0);
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let user, days = {}, selectedDay = null, score = 3;
+
+/* INIT */
+(async()=>{
+  const { data } = await sb.auth.getSession();
+  user = data.session?.user;
+  if(!user){
+    alert("Faça login no Supabase Auth");
+    return;
+  }
+  load();
+})();
+
+function todayNumber(){
+  const t = new Date(); t.setHours(0,0,0,0);
+  return Math.min(180, Math.floor((t - CHALLENGE_START)/86400000)+1);
+}
+
+async function load(){
+  document.getElementById("dayNow").innerText = todayNumber();
+
+  const { data } = await sb.from("challenge_days").select("*");
+  days = {};
+  data.forEach(d=>days[d.day_number]=d);
+
+  renderGrid();
+}
+
+function renderGrid(){
+  const g = document.getElementById("grid");
+  g.innerHTML="";
+  let greens=0;
+
+  for(let i=1;i<=180;i++){
+    const d = document.createElement("div");
+    d.className="day";
+    d.innerText=i;
+
+    if(days[i]){
+      if(days[i].score>=4){ d.classList.add("g"); greens++; }
+      else if(days[i].score==3) d.classList.add("y");
+      else d.classList.add("r");
+    }
+    d.onclick=()=>openDay(i);
+    g.appendChild(d);
+  }
+  document.getElementById("greens").innerText=greens;
+}
+
+function openToday(){ openDay(todayNumber()); }
+
+function openDay(n){
+  selectedDay=n;
+  score=days[n]?.score||3;
+  document.getElementById("modalTitle").innerText="Dia "+n;
+
+  renderStars();
+  document.getElementById("did_create").checked=days[n]?.did_create_new||false;
+  document.getElementById("note").value=days[n]?.created_note||"";
+
+  document.getElementById("modal").style.display="flex";
+}
+
+function renderStars(){
+  const s=document.getElementById("stars");
+  s.innerHTML="";
+  for(let i=1;i<=5;i++){
+    const sp=document.createElement("span");
+    sp.innerText=i<=score?"★":"☆";
+    sp.onclick=()=>{score=i;renderStars()};
+    s.appendChild(sp);
+  }
+}
+
+async function saveDay(){
+  await sb.from("challenge_days").upsert({
+    user_id:user.id,
+    day_number:selectedDay,
+    day_date:new Date(CHALLENGE_START.getTime()+((selectedDay-1)*86400000)),
+    score,
+    did_create_new:document.getElementById("did_create").checked,
+    created_note:document.getElementById("note").value
+  });
+  document.getElementById("modal").style.display="none";
+  load();
+}
+</script>
+
 </body>
 </html>
