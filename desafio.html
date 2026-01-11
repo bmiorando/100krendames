@@ -381,7 +381,7 @@
 const SUPABASE_URL = "https://zocynwaideygqrofguhy.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable__oUfIDejQtH-_3W9iNJgcw_J-8YdXjO";
 
-const CHALLENGE_START = new Date("2026-01-11");
+const CHALLENGE_START = new Date(2026, 0, 11); // mês começa em 0
 CHALLENGE_START.setHours(0,0,0,0);
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
