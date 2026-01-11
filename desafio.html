@@ -206,13 +206,13 @@ function renderStars(){
 
 async function saveDay(){
   await sb.from("challenge_days").upsert({
-    user_id:user.id,
-    day_number:selectedDay,
-    day_date:new Date(CHALLENGE_START.getTime()+((selectedDay-1)*86400000)),
-    score,
-    did_create_new:document.getElementById("did_create").checked,
-    created_note:document.getElementById("note").value
-  });
+  user_id: user.id,
+  day_number: selectedDay,
+  day_date: new Date(CHALLENGE_START.getTime()+((selectedDay-1)*86400000)),
+  score: Number(score),
+  did_create_new: document.getElementById("did_create").checked,
+  created_note: document.getElementById("note").value
+});
   document.getElementById("modal").style.display="none";
   load();
 }
