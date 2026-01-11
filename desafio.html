@@ -9,136 +9,385 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 
   <style>
+    :root{
+      --bg:#070c16;
+      --panel:#0b1220;
+      --card:#0f1a33;
+      --stroke:rgba(255,255,255,.08);
+      --muted:rgba(231,238,252,.68);
+      --text:#e7eefc;
+
+      --green:#2ecc71;
+      --yellow:#f1c40f;
+      --red:#e74c3c;
+      --blue:#1f8ef1;
+    }
+
+    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:Arial, sans-serif;
-      background:#0b1220;
-      color:#e7eefc;
-      padding:20px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 600px at 50% -10%, rgba(31,142,241,.18), transparent 60%),
+                  radial-gradient(900px 500px at 85% 10%, rgba(46,204,113,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      padding:28px;
     }
-    h1{margin-bottom:5px}
-    .muted{opacity:.7;font-size:14px}
 
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:12px;
-      margin:20px 0;
+    .topbar{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
     }
-    .card{
-      background:#111a2e;
-      border-radius:12px;
-      padding:16px;
-    }
-    .big{font-size:22px;font-weight:bold}
+    .title{display:flex; flex-direction:column; gap:6px;}
+    .title h1{margin:0; font-size:40px; letter-spacing:.3px;}
+    .title .sub{color:var(--muted); font-size:14px;}
 
-    button{
-      background:#1f8ef1;
+    .actions{display:flex; gap:10px; align-items:center}
+    .btn{
       border:none;
-      color:#fff;
+      color:white;
       padding:10px 14px;
-      border-radius:8px;
+      border-radius:12px;
       cursor:pointer;
-      font-weight:bold;
+      font-weight:800;
+      background:rgba(31,142,241,.95);
+      box-shadow:0 10px 30px rgba(31,142,241,.18);
     }
+    .btn.danger{
+      background:rgba(231,76,60,.95);
+      box-shadow:0 10px 30px rgba(231,76,60,.14);
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns: 320px 1fr 300px;
+      gap:16px;
+      align-items:start;
+    }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(15,26,51,.92), rgba(11,18,32,.92));
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      padding:16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+
+    .panel h3{
+      margin:0 0 10px;
+      font-size:14px;
+      letter-spacing:.6px;
+      color:rgba(231,238,252,.8);
+      text-transform:uppercase;
+    }
+
+    .kpi{
+      display:flex; align-items:baseline; justify-content:space-between;
+      padding:12px 12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      margin-bottom:10px;
+    }
+    .kpi .label{color:var(--muted); font-size:12px}
+    .kpi .value{font-size:26px; font-weight:900}
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(46,204,113,.12);
+      border:1px solid rgba(46,204,113,.22);
+      color:rgba(231,238,252,.9);
+      padding:10px 12px;
+      border-radius:999px;
+      font-weight:800;
+      margin-top:10px;
+    }
+    .chip .dot{
+      width:10px;height:10px;border-radius:999px;background:var(--green);
+      box-shadow:0 0 18px rgba(46,204,113,.45);
+    }
+
+    .mainGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:16px;
+    }
+
+    .rings{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap:12px;
+    }
+    .ringCard{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:18px;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:160px;
+    }
+    .ringTop{
+      display:flex; justify-content:space-between; align-items:center;
+      color:var(--muted); font-size:12px;
+      letter-spacing:.4px;
+      text-transform:uppercase;
+    }
+    .ringWrap{display:flex; align-items:center; gap:12px;}
+    .ringWrap canvas{width:88px !important; height:88px !important;}
+    .ringMeta{display:flex; flex-direction:column; gap:4px;}
+    .ringMeta .pct{font-size:22px; font-weight:900}
+    .ringMeta .hint{font-size:12px; color:var(--muted)}
+
+    .chartCard{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:18px;
+      padding:14px;
+    }
+    .chartTitle{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:8px;
+    }
+    .chartTitle .t{font-weight:900; letter-spacing:.4px;}
+    .chartTitle .m{color:var(--muted); font-size:12px;}
+    .chartCard canvas{width:100% !important; height:260px !important;}
+
+    .heatTitle{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+    .heatTitle .t{font-weight:900}
+    .heatTitle .m{color:var(--muted); font-size:12px}
 
     .days{
       display:grid;
-      grid-template-columns:repeat(18,1fr);
+      grid-template-columns: repeat(18, 1fr);
       gap:6px;
     }
     .day{
-      background:#1a2440;
-      border-radius:6px;
-      height:28px;
+      height:30px;
+      border-radius:10px;
       font-size:12px;
       display:flex;
       align-items:center;
       justify-content:center;
       cursor:pointer;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+      user-select:none;
     }
-    .g{background:#2ecc71}
-    .y{background:#f1c40f;color:#000}
-    .r{background:#e74c3c}
+    .day.g{background:rgba(46,204,113,.95); color:#08130c; border-color:rgba(46,204,113,.4)}
+    .day.y{background:rgba(241,196,15,.95); color:#121009; border-color:rgba(241,196,15,.45)}
+    .day.r{background:rgba(231,76,60,.95); color:#140808; border-color:rgba(231,76,60,.45)}
 
     .modal{
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,.7);
+      background:rgba(0,0,0,.75);
       display:none;
       align-items:center;
       justify-content:center;
+      padding:16px;
     }
     .modal-box{
-      background:#0f172a;
-      padding:20px;
-      border-radius:12px;
-      width:320px;
+      width:360px;
+      background:linear-gradient(180deg, rgba(15,26,51,.98), rgba(11,18,32,.98));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:0 30px 100px rgba(0,0,0,.55);
     }
-    .stars span{
-      font-size:22px;
-      cursor:pointer;
+    .modal-box h3{margin:0 0 10px}
+    .stars span{font-size:24px; cursor:pointer; user-select:none;}
+    #note{
+      width:100%;
+      margin-top:10px;
+      padding:10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+    }
+
+    /* Mobile */
+    @media (max-width: 1100px){
+      .layout{grid-template-columns: 1fr; }
+      .rings{grid-template-columns: repeat(2, minmax(180px, 1fr));}
     }
   </style>
 </head>
 <body>
 
-<h1>Desafio 180 Dias</h1>
-<div class="muted">Criar coisas todos os dias</div>
+  <div class="topbar">
+    <div class="title">
+      <h1>Desafio 180 Dias</h1>
+      <div class="sub">Score diário + histórico • Sem login • Supabase</div>
+    </div>
 
-<div class="grid">
-  <div class="card">
-    <div class="muted">Dia atual</div>
-    <div class="big" id="dayNow">–</div>
-  </div>
-  <div class="card">
-    <div class="muted">Dias verdes (4–5)</div>
-    <div class="big" id="greens">–</div>
-  </div>
-  <div class="card">
-    <div class="muted">Streak criação</div>
-    <div class="big" id="streak">–</div>
-  </div>
-</div>
-
-<button onclick="openToday()">MARCAR HOJE</button>
-<button onclick="resetAll()" style="background:#e74c3c;margin-left:10px">ZERAR DADOS</button>
-
-<h3 style="margin-top:30px">Histórico</h3>
-<div class="days" id="grid"></div>
-
-<!-- MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <h3 id="modalTitle"></h3>
-
-    <div class="stars" id="stars"></div>
-
-    <label>
-      <input type="checkbox" id="did_create">
-      Criei algo hoje
-    </label>
-
-    <input id="note" placeholder="O que eu criei?"
-      style="width:100%;margin-top:8px;padding:8px">
-
-    <div style="margin-top:12px;text-align:right">
-      <button onclick="saveDay()">Salvar</button>
+    <div class="actions">
+      <button class="btn" onclick="openToday()">MARCAR HOJE</button>
+      <button class="btn danger" onclick="resetAll()">ZERAR DADOS</button>
     </div>
   </div>
-</div>
+
+  <div class="layout">
+
+    <!-- LEFT -->
+    <div class="panel">
+      <h3>Resumo</h3>
+
+      <div class="kpi">
+        <div class="label">Dia atual</div>
+        <div class="value" id="dayNow">–</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">Dias verdes (4–5)</div>
+        <div class="value" id="greens">–</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">Streak criação</div>
+        <div class="value" id="streak">–</div>
+      </div>
+
+      <div class="chip">
+        <span class="dot"></span>
+        <span id="statusText">Soldado em movimento</span>
+      </div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="panel mainGrid">
+
+      <div class="rings">
+        <div class="ringCard">
+          <div class="ringTop"><span>Momentum</span><span id="m1Label">últimos 7 dias</span></div>
+          <div class="ringWrap">
+            <canvas id="ring1"></canvas>
+            <div class="ringMeta">
+              <div class="pct" id="ring1Pct">–%</div>
+              <div class="hint">consistência (verde)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ringCard">
+          <div class="ringTop"><span>Progresso</span><span>dia / 180</span></div>
+          <div class="ringWrap">
+            <canvas id="ring2"></canvas>
+            <div class="ringMeta">
+              <div class="pct" id="ring2Pct">–%</div>
+              <div class="hint">tempo decorrido</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ringCard">
+          <div class="ringTop"><span>Qualidade</span><span>média</span></div>
+          <div class="ringWrap">
+            <canvas id="ring3"></canvas>
+            <div class="ringMeta">
+              <div class="pct" id="ring3Pct">–%</div>
+              <div class="hint">score médio</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ringCard">
+          <div class="ringTop"><span>Execução</span><span>criei algo</span></div>
+          <div class="ringWrap">
+            <canvas id="ring4"></canvas>
+            <div class="ringMeta">
+              <div class="pct" id="ring4Pct">–%</div>
+              <div class="hint">dias marcados</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">
+          <div class="t">Daily Progress</div>
+          <div class="m">score por dia (1–5)</div>
+        </div>
+        <canvas id="line1"></canvas>
+      </div>
+
+      <div>
+        <div class="heatTitle">
+          <div class="t">Histórico</div>
+          <div class="m">clique em um dia para editar</div>
+        </div>
+        <div class="days" id="grid"></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="panel">
+      <h3>Top stats</h3>
+
+      <div class="kpi">
+        <div class="label">Dias marcados</div>
+        <div class="value" id="markedDays">–</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">Média score</div>
+        <div class="value" id="avgScore">–</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">Verde %</div>
+        <div class="value" id="greenPct">–%</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">Criei algo %</div>
+        <div class="value" id="createPct">–%</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <h3 id="modalTitle"></h3>
+
+      <div class="stars" id="stars"></div>
+
+      <label>
+        <input type="checkbox" id="did_create">
+        Criei algo hoje
+      </label>
+
+      <input id="note" placeholder="O que eu criei?">
+
+      <div style="margin-top:12px;text-align:right">
+        <button class="btn" onclick="saveDay()">Salvar</button>
+      </div>
+    </div>
+  </div>
 
 <script>
 /* CONFIG */
 const SUPABASE_URL = "https://zocynwaideygqrofguhy.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable__oUfIDejQtH-_3W9iNJgcw_J-8YdXjO";
 
-const CHALLENGE_START = new Date("2026-01-11"); // ALTERE
+const CHALLENGE_START = new Date("2026-01-11");
 CHALLENGE_START.setHours(0,0,0,0);
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let user, days = {}, selectedDay = null, score = 3;
+let _charts = {};
 
 /* INIT */
 user = { id: "desafio-180" };
@@ -158,11 +407,18 @@ function todayNumber(){
 async function load(){
   document.getElementById("dayNow").innerText = todayNumber();
 
-  const { data } = await sb.from("challenge_days").select("*");
+  const { data, error } = await sb.from("challenge_days").select("*");
+  if(error){
+    console.error(error);
+    return;
+  }
+
   days = {};
-  data.forEach(d=>days[d.day_number]=d);
+  (data || []).forEach(d=>days[d.day_number]=d);
 
   renderGrid();
+  updatePremiumUI();
+  renderPremiumCharts();
 }
 
 function renderGrid(){
@@ -171,17 +427,18 @@ function renderGrid(){
   let greens=0;
 
   for(let i=1;i<=180;i++){
-    const d = document.createElement("div");
-    d.className="day";
-    d.innerText=i;
+    const el = document.createElement("div");
+    el.className="day";
+    el.innerText=i;
 
     if(days[i]){
-      if(days[i].score>=4){ d.classList.add("g"); greens++; }
-      else if(days[i].score==3) d.classList.add("y");
-      else d.classList.add("r");
+      const sc = Number(days[i].score);
+      if(sc>=4){ el.classList.add("g"); greens++; }
+      else if(sc===3) el.classList.add("y");
+      else el.classList.add("r");
     }
-    d.onclick=()=>openDay(i);
-    g.appendChild(d);
+    el.onclick=()=>openDay(i);
+    g.appendChild(el);
   }
   document.getElementById("greens").innerText=greens;
 }
@@ -190,11 +447,11 @@ function openToday(){ openDay(todayNumber()); }
 
 function openDay(n){
   selectedDay=n;
-  score=days[n]?.score||3;
+  score=Number(days[n]?.score ?? 3);
   document.getElementById("modalTitle").innerText="Dia "+n;
 
   renderStars();
-  document.getElementById("did_create").checked=days[n]?.did_create_new||false;
+  document.getElementById("did_create").checked=!!days[n]?.did_create_new;
   document.getElementById("note").value=days[n]?.created_note||"";
 
   document.getElementById("modal").style.display="flex";
@@ -205,13 +462,13 @@ function renderStars(){
   s.innerHTML="";
   for(let i=1;i<=5;i++){
     const sp=document.createElement("span");
-    sp.innerText=i<=score?"★":"☆";
+    sp.textContent = (i<=score) ? "★" : "☆";
     sp.onclick=()=>{score=i;renderStars()};
     s.appendChild(sp);
   }
 }
 
-  async function saveDay(){
+async function saveDay(){
   await sb.from("challenge_days").upsert({
     user_id: user.id,
     day_number: selectedDay,
@@ -240,12 +497,146 @@ async function resetAll(){
 
   days = {};
   renderGrid();
-  document.getElementById("dayNow").innerText = todayNumber();
-  document.getElementById("greens").innerText = "0";
-  document.getElementById("streak").innerText = "–";
+  updatePremiumUI();
+  renderPremiumCharts();
   alert("Dados zerados.");
 }
 
+/* Premium helpers */
+function getAllDaysArray(){
+  const arr = [];
+  for(let i=1;i<=180;i++){
+    const v = days[i];
+    arr.push({
+      day: i,
+      score: v ? Number(v.score) : null,
+      did_create_new: v ? !!v.did_create_new : false
+    });
+  }
+  return arr;
+}
+
+function calcStreak(){
+  const today = todayNumber();
+  let s = 0;
+  for(let i=today;i>=1;i--){
+    if(days[i] && !!days[i].did_create_new) s++;
+    else break;
+  }
+  return s;
+}
+
+function updatePremiumUI(){
+  const arr = getAllDaysArray();
+  const today = todayNumber();
+
+  document.getElementById("dayNow").innerText = today;
+
+  const marked = arr.filter(x=>x.score !== null).length;
+  const greens = arr.filter(x=>x.score !== null && x.score >= 4).length;
+  const avg = marked ? (arr.filter(x=>x.score!==null).reduce((a,b)=>a+b.score,0)/marked) : 0;
+
+  const createCount = arr.filter(x=>x.did_create_new).length;
+  const greenPct = marked ? Math.round((greens/marked)*100) : 0;
+  const createPct = marked ? Math.round((createCount/marked)*100) : 0;
+
+  document.getElementById("greens").innerText = greens;
+  document.getElementById("streak").innerText = calcStreak();
+
+  document.getElementById("markedDays").innerText = marked;
+  document.getElementById("avgScore").innerText = marked ? avg.toFixed(1) : "–";
+  document.getElementById("greenPct").innerText = marked ? `${greenPct}%` : "–%";
+  document.getElementById("createPct").innerText = marked ? `${createPct}%` : "–%";
+
+  const st = document.getElementById("statusText");
+  if(greenPct >= 70) st.innerText = "Elite em execução";
+  else if(greenPct >= 50) st.innerText = "Soldado consistente";
+  else st.innerText = "Soldado em movimento";
+
+  // rings labels
+  document.getElementById("ring1Pct").innerText = marked ? `${Math.min(100, Math.max(0, greenPct))}%` : "–%";
+  document.getElementById("ring2Pct").innerText = `${Math.round((today/180)*100)}%`;
+  document.getElementById("ring3Pct").innerText = marked ? `${Math.round((avg/5)*100)}%` : "–%";
+  document.getElementById("ring4Pct").innerText = today ? `${Math.round((marked/today)*100)}%` : "–%";
+}
+
+function makeRing(ctxId, pct){
+  const ctx = document.getElementById(ctxId);
+  if(_charts[ctxId]) _charts[ctxId].destroy();
+
+  _charts[ctxId] = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["ok","resto"],
+      datasets: [{
+        data: [pct, 100-pct],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive:true,
+      cutout:"78%",
+      plugins:{ legend:{display:false}, tooltip:{enabled:false} }
+    }
+  });
+}
+
+function renderPremiumCharts(){
+  const arr = getAllDaysArray();
+  const today = todayNumber();
+
+  const marked = arr.filter(x=>x.score !== null).length;
+  const greens = arr.filter(x=>x.score !== null && x.score >= 4).length;
+
+  const last7 = arr.slice(Math.max(0, today-7), today);
+  const last7Marked = last7.filter(x=>x.score!==null).length;
+  const last7Greens = last7.filter(x=>x.score!==null && x.score>=4).length;
+  const ring1 = last7Marked ? Math.round((last7Greens/last7Marked)*100) : 0;
+
+  const ring2 = Math.round((today/180)*100);
+
+  const avg = marked ? (arr.filter(x=>x.score!==null).reduce((a,b)=>a+b.score,0)/marked) : 0;
+  const ring3 = marked ? Math.round((avg/5)*100) : 0;
+
+  const ring4 = today ? Math.round((marked/today)*100) : 0;
+
+  document.getElementById("ring1Pct").innerText = `${ring1}%`;
+  document.getElementById("ring2Pct").innerText = `${ring2}%`;
+  document.getElementById("ring3Pct").innerText = marked ? `${ring3}%` : "–%";
+  document.getElementById("ring4Pct").innerText = `${ring4}%`;
+
+  makeRing("ring1", ring1);
+  makeRing("ring2", ring2);
+  makeRing("ring3", ring3);
+  makeRing("ring4", ring4);
+
+  const labels = arr.map(x=>x.day);
+  const data = arr.map(x=>x.score);
+
+  const ctx = document.getElementById("line1");
+  if(_charts["line1"]) _charts["line1"].destroy();
+
+  _charts["line1"] = new Chart(ctx, {
+    type:"line",
+    data:{
+      labels,
+      datasets:[{
+        label:"Score",
+        data,
+        spanGaps:true,
+        tension:.35,
+        pointRadius:2
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{display:false} },
+      scales:{
+        y:{ min:0, max:5, ticks:{ stepSize:1 } }
+      }
+    }
+  });
+}
 </script>
 
 </body>
