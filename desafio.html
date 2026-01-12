@@ -267,6 +267,16 @@
       </div>
 
       <div class="kpi">
+  <div class="label">Data de hoje</div>
+  <div class="value" id="todayDate">–</div>
+</div>
+
+<div class="kpi">
+  <div class="label">Dia 1 começou em</div>
+  <div class="value" id="startDate">–</div>
+</div>
+
+      <div class="kpi">
         <div class="label">Dias verdes (4–5)</div>
         <div class="value" id="greens">–</div>
       </div>
@@ -440,6 +450,10 @@ async function load(){
   renderGrid();
   updatePremiumUI();
   renderPremiumCharts();
+
+  document.getElementById("todayDate").innerText = fmtDateBR(new Date());
+  document.getElementById("startDate").innerText = fmtDateBR(CHALLENGE_START);
+
 }
 
 function renderGrid(){
