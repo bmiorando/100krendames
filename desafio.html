@@ -238,6 +238,24 @@
 .closeBtn:hover{
   color:#fff;
 }
+/* ===== Mobile ===== */
+@media (max-width: 1100px){
+  body{ padding:16px; }
+  .title h1{ font-size:30px; }
+  .actions{ width:100%; justify-content:flex-start; flex-wrap:wrap; }
+  .btn{ width:100%; }
+
+  .layout{ grid-template-columns: 1fr; }
+  .rings{ grid-template-columns: 1fr 1fr; }
+  .chartCard canvas{ height:220px !important; }
+  .days{ grid-template-columns: repeat(9, 1fr); } /* 18 -> 9 no mobile */
+}
+
+@media (max-width: 520px){
+  .rings{ grid-template-columns: 1fr; }
+  .days{ grid-template-columns: repeat(6, 1fr); } /* ainda mais confortável */
+  .modal-box{ width:100%; max-width:380px; }
+}
 
   </style>
 </head>
@@ -251,7 +269,7 @@
 
     <div class="actions">
       <button class="btn" onclick="openToday()">MARCAR HOJE</button>
-      <button class="btn danger" onclick="resetAll()">ZERAR DADOS</button>
+    
     </div>
   </div>
 
@@ -401,9 +419,11 @@
 
       <input id="note" placeholder="O que eu criei?">
 
-      <div style="margin-top:12px;text-align:right">
-        <button class="btn" onclick="saveDay()">Salvar</button>
-      </div>
+      <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end;">
+  <button class="btn danger" onclick="clearDay()">Apagar este dia</button>
+  <button class="btn" onclick="saveDay()">Salvar</button>
+</div>
+
     </div>
   </div>
 
@@ -675,6 +695,26 @@ function renderPremiumCharts(){
   function closeModal(){
     document.getElementById("modal").style.display = "none";
   } 
+  async function clearDay(){
+  if(selectedDay == null) return;
+  if(!confirm(`Apagar os dados do Dia ${selectedDay}?`)) return;
+
+  const { error } = await sb
+    .from("challenge_days")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("day_number", selectedDay);
+
+  if(error){
+    alert("Erro ao apagar: " + error.message);
+    return;
+  }
+
+  delete days[selectedDay];
+  closeModal();
+  load();
+}
+
 </script>
 
 </body>
