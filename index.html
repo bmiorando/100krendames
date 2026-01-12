@@ -6,11 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
 
+  <!-- libs (Painel usa fetch, Desafio usa supabase-js + Chart.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 
     body {
       margin: 0;
@@ -18,7 +19,6 @@
       background: #000 url('don.jpg') center/cover no-repeat fixed;
       color: #f9fafb;
     }
-
     body::before {
       content: "";
       position: fixed;
@@ -27,50 +27,42 @@
       z-index: -1;
     }
 
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 24px 16px 40px;
-    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+    header { margin-bottom: 18px; text-align: center; }
+    header h1 { margin: 0; font-size: 2.4rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+    header h1 span.gold { color: #fbbf24; }
+    header p { margin: 8px 0 0; opacity: 0.9; font-size: 0.95rem; }
+    .tagline { margin-top: 8px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.7; }
 
-    header {
-      margin-bottom: 24px;
-      text-align: center;
+    /* ===== Tabs (PAINEL / DESAFIO) ===== */
+    .tabs {
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin: 14px 0 18px;
+      flex-wrap: wrap;
     }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.4rem;
+    .tab-btn {
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: rgba(10, 15, 25, 0.85);
+      color: #e5e7eb;
       font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      letter-spacing: .06em;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      transition: transform .08s ease, opacity .08s ease;
+    }
+    .tab-btn:active { transform: translateY(1px) scale(.99); opacity:.95; }
+    .tab-btn.active {
+      background: linear-gradient(90deg, rgba(185,28,28,.95), rgba(249,115,22,.95));
+      border-color: rgba(251,191,36,0.55);
+      color: #fff;
     }
 
-    header h1 span.gold {
-      color: #fbbf24;
-    }
-
-    header p {
-      margin: 8px 0 0;
-      opacity: 0.9;
-      font-size: 0.95rem;
-    }
-
-    .tagline {
-      margin-top: 8px;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      opacity: 0.7;
-    }
-
-    /* agora sempre 1 coluna: status em cima, missões embaixo */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 16px;
-    }
-
+    /* ===== Cards base ===== */
+    .cards-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
     .card {
       background: rgba(10, 15, 25, 0.94);
       border-radius: 18px;
@@ -79,28 +71,11 @@
       box-shadow: 0 18px 40px rgba(0,0,0,0.8);
       backdrop-filter: blur(14px);
     }
+    .card h2 { margin: 0 0 10px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+    .card h2 span.emoji { font-size: 1.25rem; }
 
-    .card h2 {
-      margin: 0 0 10px;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card h2 span.emoji {
-      font-size: 1.25rem;
-    }
-
-    label {
-      font-size: 0.8rem;
-      opacity: 0.9;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    input[type="number"],
-    input[type="text"] {
+    label { font-size: 0.8rem; opacity: 0.9; display: block; margin-bottom: 4px; }
+    input[type="number"], input[type="text"] {
       width: 100%;
       border-radius: 10px;
       border: 1px solid rgba(148, 163, 184, 0.4);
@@ -110,11 +85,7 @@
       font-size: 0.95rem;
       outline: none;
     }
-
-    input[type="text"]::placeholder {
-      color: rgba(148, 163, 184, 0.7);
-    }
-
+    input[type="text"]::placeholder { color: rgba(148, 163, 184, 0.7); }
     textarea {
       width: 100%;
       border-radius: 10px;
@@ -127,40 +98,14 @@
       resize: vertical;
       min-height: 48px;
     }
+    textarea::placeholder { color: rgba(148, 163, 184, 0.7); }
 
-    textarea::placeholder {
-      color: rgba(148, 163, 184, 0.7);
-    }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+    .row .col { flex: 1 1 200px; }
+    .helper-text { font-size: 0.8rem; opacity: 0.7; margin-top: 4px; }
 
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .row .col {
-      flex: 1 1 200px;
-    }
-
-    .helper-text {
-      font-size: 0.8rem;
-      opacity: 0.7;
-      margin-top: 4px;
-    }
-
-    .progress-wrapper {
-      margin-top: 10px;
-    }
-
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      opacity: 0.9;
-      margin-bottom: 4px;
-    }
-
+    .progress-wrapper { margin-top: 10px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.9; margin-bottom: 4px; }
     .progress-bar-bg {
       width: 100%;
       height: 14px;
@@ -169,7 +114,6 @@
       overflow: hidden;
       border: 1px solid rgba(148, 163, 184, 0.45);
     }
-
     .progress-bar-fill {
       height: 100%;
       width: 0%;
@@ -189,7 +133,6 @@
       font-size: 0.78rem;
       margin-top: 8px;
     }
-
     .level-chip span.dot {
       width: 8px;
       height: 8px;
@@ -197,131 +140,31 @@
       background: #fbbf24;
       box-shadow: 0 0 10px rgba(251,191,36,0.9);
     }
+    .sub-label { font-size: 0.76rem; opacity: 0.75; margin-top: 2px; }
 
-    .sub-label {
-      font-size: 0.76rem;
-      opacity: 0.75;
-      margin-top: 2px;
-    }
+    .save-feedback { margin-top: 6px; font-size: 0.78rem; opacity: 0; transition: opacity 0.2s ease-out; }
+    .save-feedback.visible { opacity: 0.9; }
 
-    .save-feedback {
-      margin-top: 6px;
-      font-size: 0.78rem;
-      opacity: 0;
-      transition: opacity 0.2s ease-out;
-    }
+    .checkpoints-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 8px; }
+    .checkpoint { border-radius: 12px; padding: 8px 10px; background: rgba(15,23,42,0.96); border: 1px solid rgba(148, 163, 184, 0.55); font-size: 0.78rem; }
+    .checkpoint-title { font-weight: 600; margin-bottom: 4px; font-size: 0.8rem; }
+    .checkpoint-status { font-size: 0.75rem; display: flex; align-items: center; gap: 4px; }
+    .cp-unlocked { border-color: rgba(34,197,94,0.95); box-shadow: 0 0 12px rgba(22,163,74,0.38); }
+    .cp-unlocked .checkpoint-status { color: #4ade80; }
+    .cp-next { border-color: rgba(251,191,36,0.95); box-shadow: 0 0 12px rgba(251,191,36,0.3); }
+    .cp-next .checkpoint-status { color: #facc15; }
+    .cp-locked .checkpoint-status { color: rgba(148,163,184,0.85); }
 
-    .save-feedback.visible {
-      opacity: 0.9;
-    }
+    .missions-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .mission-row { display: flex; flex-direction: column; gap: 6px; padding: 6px 8px; border-radius: 10px; background: rgba(15,23,42,0.8); border: 1px solid rgba(148,163,184,0.3); }
+    .mission-header { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; opacity: 0.9; }
+    .mission-header input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+    .mission-header span { flex: 1; }
+    .mission-row textarea { margin-top: 2px; }
+    .mission-row.done { border-color: rgba(34,197,94,0.9); background: rgba(5,46,22,0.95); opacity: 0.97; }
+    .mission-row.done textarea { text-decoration: line-through; opacity: 0.9; }
 
-    .checkpoints-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .checkpoint {
-      border-radius: 12px;
-      padding: 8px 10px;
-      background: rgba(15,23,42,0.96);
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      font-size: 0.78rem;
-    }
-
-    .checkpoint-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-      font-size: 0.8rem;
-    }
-
-    .checkpoint-status {
-      font-size: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .cp-unlocked {
-      border-color: rgba(34,197,94,0.95);
-      box-shadow: 0 0 12px rgba(22,163,74,0.38);
-    }
-
-    .cp-unlocked .checkpoint-status {
-      color: #4ade80;
-    }
-
-    .cp-next {
-      border-color: rgba(251,191,36,0.95);
-      box-shadow: 0 0 12px rgba(251,191,36,0.3);
-    }
-
-    .cp-next .checkpoint-status {
-      color: #facc15;
-    }
-
-    .cp-locked .checkpoint-status {
-      color: rgba(148,163,184,0.85);
-    }
-
-    .missions-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .mission-row {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 6px 8px;
-      border-radius: 10px;
-      background: rgba(15,23,42,0.8);
-      border: 1px solid rgba(148,163,184,0.3);
-    }
-
-    .mission-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.78rem;
-      opacity: 0.9;
-    }
-
-    .mission-header input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-
-    .mission-header span {
-      flex: 1;
-    }
-
-    .mission-row textarea {
-      margin-top: 2px;
-    }
-
-    .mission-row.done {
-      border-color: rgba(34,197,94,0.9);
-      background: rgba(5,46,22,0.95);
-      opacity: 0.97;
-    }
-
-    .mission-row.done textarea {
-      text-decoration: line-through;
-      opacity: 0.9;
-    }
-
-    .btn-row {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
+    .btn-row { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
     button {
       border: none;
       padding: 8px 12px;
@@ -334,26 +177,14 @@
       transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
       box-shadow: 0 10px 25px rgba(0,0,0,0.7);
     }
-
     button.secondary {
       background: rgba(15,23,42,0.9);
       border: 1px solid rgba(148,163,184,0.7);
       box-shadow: 0 4px 10px rgba(0,0,0,0.6);
     }
+    button:active { transform: translateY(1px) scale(0.99); box-shadow: 0 4px 12px rgba(0,0,0,0.7); opacity: 0.95; }
 
-    button:active {
-      transform: translateY(1px) scale(0.99);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.7);
-      opacity: 0.95;
-    }
-
-    .cards-rewards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-      margin-top: 8px;
-    }
-
+    .cards-rewards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 8px; }
     .reward-card {
       border-radius: 14px;
       padding: 10px;
@@ -366,55 +197,16 @@
       cursor: pointer;
       position: relative;
     }
+    .reward-title { font-weight: 600; font-size: 0.82rem; }
+    .reward-tag { font-size: 0.7rem; opacity: 0.8; }
+    .reward-quote { font-size: 0.72rem; opacity: 0.8; margin-top: 2px; font-style: italic; }
+    .reward-status { margin-top: 4px; font-size: 0.75rem; display: flex; align-items: center; gap: 4px; }
+    .reward-unlocked { border-color: rgba(34,197,94,0.95); box-shadow: 0 0 12px rgba(22,163,74,0.35); }
+    .reward-unlocked .reward-status { color: #4ade80; }
+    .reward-locked .reward-status { color: rgba(148,163,184,0.85); }
+    .reward-unlocked .reward-title { color: #fbbf24; }
 
-    .reward-title {
-      font-weight: 600;
-      font-size: 0.82rem;
-    }
-
-    .reward-tag {
-      font-size: 0.7rem;
-      opacity: 0.8;
-    }
-
-    .reward-quote {
-      font-size: 0.72rem;
-      opacity: 0.8;
-      margin-top: 2px;
-      font-style: italic;
-    }
-
-    .reward-status {
-      margin-top: 4px;
-      font-size: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .reward-unlocked {
-      border-color: rgba(34,197,94,0.95);
-      box-shadow: 0 0 12px rgba(22,163,74,0.35);
-    }
-
-    .reward-unlocked .reward-status {
-      color: #4ade80;
-    }
-
-    .reward-locked .reward-status {
-      color: rgba(148,163,184,0.85);
-    }
-
-    .reward-unlocked .reward-title {
-      color: #fbbf24;
-    }
-
-    footer {
-      margin-top: 22px;
-      font-size: 0.78rem;
-      opacity: 0.6;
-      text-align: center;
-    }
+    footer { margin-top: 22px; font-size: 0.78rem; opacity: 0.6; text-align: center; }
 
     /* MODAL DA CARTA */
     .reward-modal {
@@ -426,11 +218,7 @@
       justify-content: center;
       z-index: 50;
     }
-
-    .reward-modal.open {
-      display: flex;
-    }
-
+    .reward-modal.open { display: flex; }
     .reward-modal-inner {
       position: relative;
       width: min(360px, 90%);
@@ -441,7 +229,6 @@
       box-shadow: 0 30px 80px rgba(0,0,0,0.9);
       overflow: hidden;
     }
-
     .reward-modal-inner::before {
       content: "";
       position: absolute;
@@ -451,40 +238,11 @@
       filter: grayscale(100%);
       z-index: -1;
     }
-
-    .reward-modal-title {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .reward-modal-tag {
-      font-size: 0.78rem;
-      opacity: 0.85;
-      margin-bottom: 10px;
-    }
-
-    .reward-modal-quote {
-      font-size: 0.86rem;
-      font-style: italic;
-      margin-bottom: 10px;
-    }
-
-    .reward-modal-desc {
-      font-size: 0.8rem;
-      opacity: 0.9;
-      margin-bottom: 12px;
-    }
-
-    .reward-modal-footer {
-      font-size: 0.72rem;
-      opacity: 0.8;
-      text-align: right;
-    }
-
+    .reward-modal-title { font-size: 1rem; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .reward-modal-tag { font-size: 0.78rem; opacity: 0.85; margin-bottom: 10px; }
+    .reward-modal-quote { font-size: 0.86rem; font-style: italic; margin-bottom: 10px; }
+    .reward-modal-desc { font-size: 0.8rem; opacity: 0.9; margin-bottom: 12px; }
+    .reward-modal-footer { font-size: 0.72rem; opacity: 0.8; text-align: right; }
     .reward-modal-close {
       position: absolute;
       top: 8px;
@@ -502,11 +260,178 @@
       font-size: 1rem;
       box-shadow: 0 8px 20px rgba(0,0,0,0.7);
     }
+    .reward-modal-close:hover { background: rgba(30,64,175,0.9); }
 
-    .reward-modal-close:hover {
-      background: rgba(30,64,175,0.9);
+    /* ===== DESAFIO (scoped) ===== */
+    #secDesafio .muted { opacity: .75; font-size: .82rem; }
+    #secDesafio .desafio-top {
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom: 12px;
+    }
+    #secDesafio .desafio-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    #secDesafio .desafio-actions .d-btn {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,.35);
+      background: rgba(10,15,25,.85);
+      color: #e5e7eb;
+      font-weight: 800;
+      cursor:pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,.6);
+    }
+    #secDesafio .desafio-actions .d-btn.primary {
+      background: linear-gradient(90deg, rgba(37,99,235,.95), rgba(14,165,233,.85));
+      border-color: rgba(59,130,246,.35);
+      color:#fff;
+    }
+    #secDesafio .desafio-actions .d-btn.danger {
+      background: linear-gradient(90deg, rgba(220,38,38,.95), rgba(249,115,22,.9));
+      border-color: rgba(249,115,22,.35);
+      color:#fff;
     }
 
+    #secDesafio .d-grid {
+      display:grid;
+      grid-template-columns: 1.1fr 2fr 1.1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    #secDesafio .d-panel { padding:16px; border-radius:18px; background: rgba(10, 15, 25, 0.94); border: 1px solid rgba(148, 163, 184, 0.28); box-shadow: 0 18px 40px rgba(0,0,0,0.75); }
+    #secDesafio .kpi { border-radius:14px; padding:12px; background: rgba(15,23,42,.72); border: 1px solid rgba(148,163,184,.25); display:flex; justify-content:space-between; align-items:flex-end; }
+    #secDesafio .kpi .v { font-weight: 900; font-size: 1.6rem; }
+    #secDesafio .kpi .l { font-size:.8rem; opacity:.85; }
+    #secDesafio .kpi-col { display:flex; flex-direction:column; gap:10px; }
+    #secDesafio .badge {
+      margin-top: 10px;
+      display:inline-flex; gap:8px; align-items:center;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(16,185,129,.15);
+      border: 1px solid rgba(16,185,129,.35);
+      font-weight:800;
+    }
+    #secDesafio .badge .dot { width:10px; height:10px; border-radius:999px; background:#10b981; box-shadow: 0 0 12px rgba(16,185,129,.6); }
+
+    #secDesafio .rings {
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    #secDesafio .ringCard {
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(10, 15, 25, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    #secDesafio .ringMeta .t { font-size:.74rem; opacity:.8; letter-spacing:.08em; text-transform:uppercase; }
+    #secDesafio .ringMeta .b { font-size:1.15rem; font-weight:900; margin-top:4px; }
+    #secDesafio .chartCard {
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(10, 15, 25, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+    }
+    #secDesafio .chartTitle { display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; }
+    #secDesafio .days {
+      display:grid;
+      grid-template-columns: repeat(18, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+    #secDesafio .day {
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(15,23,42,.75);
+      border: 1px solid rgba(148,163,184,.18);
+      display:flex; align-items:center; justify-content:center;
+      font-size: .75rem;
+      cursor:pointer;
+      user-select:none;
+    }
+    #secDesafio .g { background: rgba(34,197,94,.85); color:#04140a; border-color: rgba(34,197,94,.35); }
+    #secDesafio .y { background: rgba(251,191,36,.92); color:#111827; border-color: rgba(251,191,36,.35); }
+    #secDesafio .r { background: rgba(239,68,68,.90); color:#111827; border-color: rgba(239,68,68,.35); }
+
+    /* modal desafio */
+    #secDesafio .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 60;
+      padding: 14px;
+    }
+    #secDesafio .modal-box {
+      width: min(420px, 100%);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(10,15,25,.96);
+      border: 1px solid rgba(148,163,184,.30);
+      box-shadow: 0 30px 90px rgba(0,0,0,.85);
+      position: relative;
+    }
+    #secDesafio .closeBtn {
+      position:absolute;
+      top:10px;
+      right:10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,.25);
+      background: rgba(15,23,42,.85);
+      color:#e5e7eb;
+      cursor:pointer;
+      font-size: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #secDesafio .stars span { font-size: 22px; cursor:pointer; }
+    #secDesafio #note {
+      margin-top: 10px;
+      width:100%;
+      padding:10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.25);
+      background: rgba(2,6,23,.95);
+      color: #fff;
+      outline:none;
+    }
+    #secDesafio .modal-actions { margin-top: 14px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
+    #secDesafio .m-btn {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,.30);
+      background: rgba(15,23,42,.85);
+      color:#e5e7eb;
+      font-weight:900;
+      cursor:pointer;
+    }
+    #secDesafio .m-btn.primary { background: linear-gradient(90deg, rgba(37,99,235,.95), rgba(14,165,233,.85)); color:#fff; border-color: rgba(59,130,246,.35); }
+    #secDesafio .m-btn.danger  { background: linear-gradient(90deg, rgba(220,38,38,.95), rgba(249,115,22,.9)); color:#fff; border-color: rgba(249,115,22,.35); }
+
+    /* mobile */
+    @media (max-width: 1100px){
+      #secDesafio .d-grid { grid-template-columns: 1fr; }
+      #secDesafio .rings { grid-template-columns: 1fr 1fr; }
+      #secDesafio .days { grid-template-columns: repeat(9, 1fr); }
+    }
+    @media (max-width: 520px){
+      header h1 { font-size: 1.9rem; }
+      #secDesafio .rings { grid-template-columns: 1fr; }
+      #secDesafio .days { grid-template-columns: repeat(6, 1fr); }
+      .tab-btn { width: 100%; }
+      #secDesafio .desafio-actions .d-btn { width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -517,97 +442,209 @@
       <div class="tagline">ninguém fora da família vê isso</div>
     </header>
 
-    <div class="cards-grid">
-      <!-- Status -->
-      <section class="card">
-        <h2><span class="emoji">🦅</span>Status da família</h2>
-
-        <div class="row">
-          <div class="col">
-            <label for="targetIncome">Meta de renda da família (R$/mês)</label>
-            <input type="number" id="targetIncome" min="0" step="1000" />
-            <div class="helper-text">Por padrão: 100000. A cifra que coloca o Don em outro patamar.</div>
-          </div>
-
-          <div class="col">
-            <label for="currentIncome">Tributo atual da família (R$/mês)</label>
-            <input type="number" id="currentIncome" min="0" step="500" />
-            <div class="helper-text">Tudo que entra limpo hoje. Sem maquiagem, só a verdade pro Don.</div>
-          </div>
-        </div>
-
-        <div class="progress-wrapper">
-          <div class="progress-label">
-            <span id="progressText">0% do caminho</span>
-            <span id="progressValues">R$ 0 / R$ 100.000</span>
-          </div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="progressBarMain"></div>
-          </div>
-        </div>
-
-        <div class="level-chip" id="levelChip">
-          <span class="dot"></span>
-          <span id="levelName">Soldado em início de carreira</span>
-        </div>
-        <div class="sub-label" id="levelDescription">
-          Ainda é cedo. Você está montando a base, escolhendo suas guerras e alianças.
-        </div>
-
-        <div id="saveFeedback" class="save-feedback"></div>
-
-        <div class="btn-row">
-          <button id="saveFinance">Salvar progresso</button>
-          <button id="resetFinance" class="secondary">Zerar registros</button>
-        </div>
-      </section>
-
-      <!-- Missões veículo 10K -->
-      <section class="card">
-        <h2><span class="emoji">💼</span>Missões do veículo de 10K</h2>
-        <p class="helper-text">
-          Fase atual: descobrir e validar um novo veículo que possa, sozinho, gerar 10–30K/mês como complemento.
-          Nada de escalar à força o negócio atual. Aqui é MVP, teste e validação.
-        </p>
-
-        <div class="missions-list" id="missionsList"></div>
-
-        <div id="missionsFeedback" class="save-feedback"></div>
-
-        <div class="btn-row">
-          <button id="saveMissions">Registrar missões</button>
-          <button id="resetMissions" class="secondary">Limpar tudo</button>
-        </div>
-      </section>
+    <!-- ABAS -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tabPainel" onclick="showSection('painel')">PAINEL</button>
+      <button class="tab-btn" id="tabDesafio" onclick="showSection('desafio')">DESAFIO</button>
     </div>
 
-    <!-- Checkpoints -->
-    <section class="card" style="margin-top:16px;">
-      <h2><span class="emoji">📈</span>Checkpoints de respeito na praça</h2>
-      <p class="helper-text">
-        Cada cifra é um ponto de não-retorno. Passou dali, o padrão de jogo do Don não volta mais para trás.
-      </p>
-      <div class="checkpoints-list" id="checkpointsList"></div>
+    <!-- ========== SEÇÃO: PAINEL (original) ========== -->
+    <section id="secPainel">
+      <div class="cards-grid">
+        <!-- Status -->
+        <section class="card">
+          <h2><span class="emoji">🦅</span>Status da família</h2>
+
+          <div class="row">
+            <div class="col">
+              <label for="targetIncome">Meta de renda da família (R$/mês)</label>
+              <input type="number" id="targetIncome" min="0" step="1000" />
+              <div class="helper-text">Por padrão: 100000. A cifra que coloca o Don em outro patamar.</div>
+            </div>
+
+            <div class="col">
+              <label for="currentIncome">Tributo atual da família (R$/mês)</label>
+              <input type="number" id="currentIncome" min="0" step="500" />
+              <div class="helper-text">Tudo que entra limpo hoje. Sem maquiagem, só a verdade pro Don.</div>
+            </div>
+          </div>
+
+          <div class="progress-wrapper">
+            <div class="progress-label">
+              <span id="progressText">0% do caminho</span>
+              <span id="progressValues">R$ 0 / R$ 100.000</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="progressBarMain"></div>
+            </div>
+          </div>
+
+          <div class="level-chip" id="levelChip">
+            <span class="dot"></span>
+            <span id="levelName">Soldado em início de carreira</span>
+          </div>
+          <div class="sub-label" id="levelDescription">
+            Ainda é cedo. Você está montando a base, escolhendo suas guerras e alianças.
+          </div>
+
+          <div id="saveFeedback" class="save-feedback"></div>
+
+          <div class="btn-row">
+            <button id="saveFinance">Salvar progresso</button>
+            <button id="resetFinance" class="secondary">Zerar registros</button>
+          </div>
+        </section>
+
+        <!-- Missões veículo 10K -->
+        <section class="card">
+          <h2><span class="emoji">💼</span>Missões do veículo de 10K</h2>
+          <p class="helper-text">
+            Fase atual: descobrir e validar um novo veículo que possa, sozinho, gerar 10–30K/mês como complemento.
+            Nada de escalar à força o negócio atual. Aqui é MVP, teste e validação.
+          </p>
+
+          <div class="missions-list" id="missionsList"></div>
+
+          <div id="missionsFeedback" class="save-feedback"></div>
+
+          <div class="btn-row">
+            <button id="saveMissions">Registrar missões</button>
+            <button id="resetMissions" class="secondary">Limpar tudo</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Checkpoints -->
+      <section class="card" style="margin-top:16px;">
+        <h2><span class="emoji">📈</span>Checkpoints de respeito na praça</h2>
+        <p class="helper-text">
+          Cada cifra é um ponto de não-retorno. Passou dali, o padrão de jogo do Don não volta mais para trás.
+        </p>
+        <div class="checkpoints-list" id="checkpointsList"></div>
+      </section>
+
+      <!-- Cartas -->
+      <section class="card" style="margin-top:12px;">
+        <h2><span class="emoji">🎴</span>Cartas do Don</h2>
+        <p class="helper-text">
+          Cada checkpoint de renda desbloqueia uma carta. Não é só dinheiro: é identidade, respeito e calibre mental.
+          Clique em uma carta desbloqueada para ver o recado do Don.
+        </p>
+        <div class="cards-rewards" id="rewardsList"></div>
+        <div id="rewardsFeedback" class="save-feedback"></div>
+      </section>
+
+      <footer>
+        Este painel existe para que o Brian de hoje pense como Don da própria família de 100K/mês.
+        O resto do mundo chama de sorte; aqui dentro, de estratégia.
+      </footer>
     </section>
 
-    <!-- Cartas -->
-    <section class="card" style="margin-top:12px;">
-      <h2><span class="emoji">🎴</span>Cartas do Don</h2>
-      <p class="helper-text">
-        Cada checkpoint de renda desbloqueia uma carta. Não é só dinheiro: é identidade, respeito e calibre mental.
-        Clique em uma carta desbloqueada para ver o recado do Don.
-      </p>
-      <div class="cards-rewards" id="rewardsList"></div>
-      <div id="rewardsFeedback" class="save-feedback"></div>
-    </section>
+    <!-- ========== SEÇÃO: DESAFIO (embutido) ========== -->
+    <section id="secDesafio" style="display:none;">
+      <div class="desafio-top">
+        <div>
+          <h2 style="margin:0 0 6px;">Desafio 180 Dias</h2>
+          <div class="muted">Score diário + histórico • Sem login • Supabase</div>
+        </div>
 
-    <footer>
-      Este painel existe para que o Brian de hoje pense como Don da própria família de 100K/mês.
-      O resto do mundo chama de sorte; aqui dentro, de estratégia.
-    </footer>
+        <div class="desafio-actions">
+          <button class="d-btn primary" onclick="openToday()">MARCAR HOJE</button>
+        </div>
+      </div>
+
+      <div class="d-grid">
+        <!-- left -->
+        <div class="d-panel">
+          <div style="font-weight:900; letter-spacing:.08em; opacity:.85; margin-bottom:10px;">RESUMO</div>
+
+          <div class="kpi-col">
+            <div class="kpi"><div class="l">Dia atual</div><div class="v" id="dayNow">–</div></div>
+            <div class="kpi"><div class="l">Dias verdes (4–5)</div><div class="v" id="greens">–</div></div>
+            <div class="kpi"><div class="l">Streak criação</div><div class="v" id="streak">–</div></div>
+          </div>
+
+          <div class="badge" id="badgeStatus" style="display:none;">
+            <span class="dot"></span>
+            <span id="badgeText">Elite em execução</span>
+          </div>
+        </div>
+
+        <!-- middle -->
+        <div>
+          <div class="rings">
+            <div class="ringCard">
+              <div class="ringMeta"><div class="t">Momentum</div><div class="b" id="momenTxt">–</div></div>
+              <div style="width:84px;height:84px;"><canvas id="ringMomentum"></canvas></div>
+            </div>
+
+            <div class="ringCard">
+              <div class="ringMeta"><div class="t">Progresso</div><div class="b" id="progTxt">–</div></div>
+              <div style="width:84px;height:84px;"><canvas id="ringProgress"></canvas></div>
+            </div>
+
+            <div class="ringCard">
+              <div class="ringMeta"><div class="t">Qualidade</div><div class="b" id="qualTxt">–</div></div>
+              <div style="width:84px;height:84px;"><canvas id="ringQuality"></canvas></div>
+            </div>
+
+            <div class="ringCard">
+              <div class="ringMeta"><div class="t">Execução</div><div class="b" id="execTxt">–</div></div>
+              <div style="width:84px;height:84px;"><canvas id="ringExec"></canvas></div>
+            </div>
+          </div>
+
+          <div class="chartCard">
+            <div class="chartTitle">
+              <div style="font-weight:900; font-size:1.05rem;">Daily Progress</div>
+              <div class="muted">score por dia (1–5)</div>
+            </div>
+            <canvas id="lineScores" height="120"></canvas>
+
+            <div style="margin-top:14px; font-weight:900; font-size:1.02rem;">Histórico</div>
+            <div class="days" id="grid"></div>
+          </div>
+        </div>
+
+        <!-- right -->
+        <div class="d-panel">
+          <div style="font-weight:900; letter-spacing:.08em; opacity:.85; margin-bottom:10px;">TOP STATS</div>
+
+          <div class="kpi-col">
+            <div class="kpi"><div class="l">Dias marcados</div><div class="v" id="daysMarked">–</div></div>
+            <div class="kpi"><div class="l">Média score</div><div class="v" id="avgScore">–</div></div>
+            <div class="kpi"><div class="l">Verde %</div><div class="v" id="greenPct">–</div></div>
+            <div class="kpi"><div class="l">Criei algo %</div><div class="v" id="createPct">–</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL (Desafio) -->
+      <div class="modal" id="modal">
+        <div class="modal-box">
+          <button class="closeBtn" onclick="closeModal()">×</button>
+          <h3 id="modalTitle" style="margin:0 0 4px;"></h3>
+          <div class="muted" id="modalDate" style="margin:6px 0 10px;"></div>
+
+          <div class="stars" id="stars" style="margin-bottom:10px;"></div>
+
+          <label style="display:flex; gap:8px; align-items:center; margin:10px 0 8px;">
+            <input type="checkbox" id="did_create">
+            Criei algo hoje
+          </label>
+
+          <input id="note" placeholder="O que eu criei?">
+
+          <div class="modal-actions">
+            <button class="m-btn danger" onclick="clearDay()">Apagar este dia</button>
+            <button class="m-btn primary" onclick="saveDay()">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <!-- MODAL DA CARTA -->
+  <!-- MODAL DA CARTA (Painel) -->
   <div id="rewardModal" class="reward-modal">
     <div class="reward-modal-inner">
       <button class="reward-modal-close" id="closeRewardModal">&times;</button>
@@ -623,12 +660,15 @@
 
   <script>
     /* ========= CONFIGURAR AQUI ========= */
-    const SUPABASE_URL = "https://zocynwaideygqrofguhy.supabase.co"; // <-- TROCAR
-    const SUPABASE_ANON_KEY = "sb_publishable__oUfIDejQtH-_3W9iNJgcw_J-8YdXjO";        // <-- TROCAR
+    const SUPABASE_URL = "https://zocynwaideygqrofguhy.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable__oUfIDejQtH-_3W9iNJgcw_J-8YdXjO";
     const SUPABASE_TABLE = "painel_don";
     const SUPABASE_ROW_ID = 1;
     /* =================================== */
 
+    /* =========================
+       PAINEL (SEU CÓDIGO ORIGINAL)
+       ========================= */
     const STORAGE_KEYS = {
       targetIncome: "brian_mafia_target_income_v1",
       currentIncome: "brian_mafia_current_income_v1",
@@ -640,102 +680,28 @@
     const checkpointValues = [5000, 10000, 20000, 40000, 60000, 80000, 100000];
 
     const rewards = [
-      {
-        value: 5000,
-        title: "Carta Disciplina Fria",
-        tag: "Checkpoint 5K/mês",
-        quote: "O homem que não domina seus hábitos nunca vai dominar uma praça.",
-        desc: "Chegar a 5K/mês prova que você saiu do improviso. Agora é sobre não voltar para baixo disso nunca mais."
-      },
-      {
-        value: 10000,
-        title: "Carta Consistência Letal",
-        tag: "Checkpoint 10K/mês",
-        quote: "Não é o golpe forte. É o golpe que nunca para de acertar.",
-        desc: "10K/mês é o primeiro nível em que o mundo começa a notar que você não é mais amador. Aqui você decide se é fogo de palha ou permanência."
-      },
-      {
-        value: 20000,
-        title: "Carta Visão de Don",
-        tag: "Checkpoint 20K/mês",
-        quote: "Quem só olha o dia de hoje, morre pobre. Quem enxerga 10 anos, escolhe as guerras certas.",
-        desc: "Em 20K/mês você não está só ganhando mais. Você começa a comprar tempo, paz mental e posição na mesa."
-      },
-      {
-        value: 40000,
-        title: "Carta Domínio da Praça",
-        tag: "Checkpoint 40K/mês",
-        quote: "Quando o dinheiro te obedece, você para de correr atrás de migalha.",
-        desc: "40K/mês é quando suas decisões ecoam na sua família, não mais só em você. Erros doem mais. Acertos também."
-      },
-      {
-        value: 60000,
-        title: "Carta Mente Blindada",
-        tag: "Checkpoint 60K/mês",
-        quote: "Metade da riqueza é não se sabotar quando tudo começa a dar certo.",
-        desc: "Chegar aqui exige mais cabeça do que talento. Quem não sabe ficar rico em silêncio, volta rápido pro zero."
-      },
-      {
-        value: 80000,
-        title: "Carta Tempo é Moeda",
-        tag: "Checkpoint 80K/mês",
-        quote: "O homem rico de verdade compra tempo, não brinquedo.",
-        desc: "80K/mês mostra que você tem opção. Agora cada sim errado custa caro demais. Tempo vira seu ativo principal."
-      },
-      {
-        value: 100000,
-        title: "Carta Don da Família",
-        tag: "Checkpoint 100K/mês",
-        quote: "Você não corre mais atrás do dinheiro. Ele circula em torno das suas decisões.",
-        desc: "100K/mês fecha um ciclo. Não é fim de jogo. É o começo de um jogo onde você escolhe em que mundos quer jogar."
-      }
+      { value: 5000, title: "Carta Disciplina Fria", tag: "Checkpoint 5K/mês", quote: "O homem que não domina seus hábitos nunca vai dominar uma praça.", desc: "Chegar a 5K/mês prova que você saiu do improviso. Agora é sobre não voltar para baixo disso nunca mais." },
+      { value: 10000, title: "Carta Consistência Letal", tag: "Checkpoint 10K/mês", quote: "Não é o golpe forte. É o golpe que nunca para de acertar.", desc: "10K/mês é o primeiro nível em que o mundo começa a notar que você não é mais amador. Aqui você decide se é fogo de palha ou permanência." },
+      { value: 20000, title: "Carta Visão de Don", tag: "Checkpoint 20K/mês", quote: "Quem só olha o dia de hoje, morre pobre. Quem enxerga 10 anos, escolhe as guerras certas.", desc: "Em 20K/mês você não está só ganhando mais. Você começa a comprar tempo, paz mental e posição na mesa." },
+      { value: 40000, title: "Carta Domínio da Praça", tag: "Checkpoint 40K/mês", quote: "Quando o dinheiro te obedece, você para de correr atrás de migalha.", desc: "40K/mês é quando suas decisões ecoam na sua família, não mais só em você. Erros doem mais. Acertos também." },
+      { value: 60000, title: "Carta Mente Blindada", tag: "Checkpoint 60K/mês", quote: "Metade da riqueza é não se sabotar quando tudo começa a dar certo.", desc: "Chegar aqui exige mais cabeça do que talento. Quem não sabe ficar rico em silêncio, volta rápido pro zero." },
+      { value: 80000, title: "Carta Tempo é Moeda", tag: "Checkpoint 80K/mês", quote: "O homem rico de verdade compra tempo, não brinquedo.", desc: "80K/mês mostra que você tem opção. Agora cada sim errado custa caro demais. Tempo vira seu ativo principal." },
+      { value: 100000, title: "Carta Don da Família", tag: "Checkpoint 100K/mês", quote: "Você não corre mais atrás do dinheiro. Ele circula em torno das suas decisões.", desc: "100K/mês fecha um ciclo. Não é fim de jogo. É o começo de um jogo onde você escolhe em que mundos quer jogar." }
     ];
 
     function formatCurrency(value) {
       if (isNaN(value)) value = 0;
-      return value.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-        maximumFractionDigits: 0
-      });
+      return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
     }
-
-    function clamp(value, min, max) {
-      return Math.min(Math.max(value, min), max);
-    }
+    function clamp(value, min, max) { return Math.min(Math.max(value, min), max); }
 
     function getLevel(percent) {
-      if (percent >= 100) {
-        return {
-          name: "Don da família 100K",
-          description: "Você assumiu o topo. Agora o jogo é proteger, simplificar e multiplicar sem chamar atenção errada."
-        };
-      } else if (percent >= 75) {
-        return {
-          name: "Underboss em operação",
-          description: "Já existe estrutura, fluxo de caixa e respeito. As decisões agora são cirúrgicas."
-        };
-      } else if (percent >= 50) {
-        return {
-          name: "Consigliere em ascensão",
-          description: "Você entende o jogo, enxerga os riscos e sabe onde não mexer. Falta volume."
-        };
-      } else if (percent >= 25) {
-        return {
-          name: "Capo com território",
-          description: "Você domina um pedaço da praça. O foco é aumentar margem e cortar ruído."
-        };
-      } else if (percent > 0) {
-        return {
-          name: "Soldado em movimento",
-          description: "Você saiu da teoria e entrou em campo. Sua arma é consistência, não pressa."
-        };
-      } else {
-        return {
-          name: "Soldado em início de carreira",
-          description: "Ainda é cedo. Você está montando a base, escolhendo suas guerras e alianças."
-        };
-      }
+      if (percent >= 100) return { name: "Don da família 100K", description: "Você assumiu o topo. Agora o jogo é proteger, simplificar e multiplicar sem chamar atenção errada." };
+      if (percent >= 75) return { name: "Underboss em operação", description: "Já existe estrutura, fluxo de caixa e respeito. As decisões agora são cirúrgicas." };
+      if (percent >= 50) return { name: "Consigliere em ascensão", description: "Você entende o jogo, enxerga os riscos e sabe onde não mexer. Falta volume." };
+      if (percent >= 25) return { name: "Capo com território", description: "Você domina um pedaço da praça. O foco é aumentar margem e cortar ruído." };
+      if (percent > 0)  return { name: "Soldado em movimento", description: "Você saiu da teoria e entrou em campo. Sua arma é consistência, não pressa." };
+      return { name: "Soldado em início de carreira", description: "Ainda é cedo. Você está montando a base, escolhendo suas guerras e alianças." };
     }
 
     function showFeedback(elementId, message) {
@@ -743,25 +709,14 @@
       if (!el) return;
       el.textContent = message;
       el.classList.add("visible");
-      setTimeout(() => {
-        el.classList.remove("visible");
-      }, 2300);
+      setTimeout(() => el.classList.remove("visible"), 2300);
     }
 
     function defaultMissions() {
       return [
-        {
-          text: "Listar 3 veículos de negócio escaláveis que fazem sentido pra mim (modelo, ticket, margem).",
-          done: false
-        },
-        {
-          text: "Escolher 1 veículo e definir um MVP simples para validar (oferta mínima, página simples, tráfego de teste).",
-          done: false
-        },
-        {
-          text: "Rodar 1 teste real (anúncio/campanha) e registrar números: cliques, leads, vendas, percepção de potencial.",
-          done: false
-        }
+        { text: "Listar 3 veículos de negócio escaláveis que fazem sentido pra mim (modelo, ticket, margem).", done: false },
+        { text: "Escolher 1 veículo e definir um MVP simples para validar (oferta mínima, página simples, tráfego de teste).", done: false },
+        { text: "Rodar 1 teste real (anúncio/campanha) e registrar números: cliques, leads, vendas, percepção de potencial.", done: false }
       ];
     }
 
@@ -771,13 +726,8 @@
         if (!raw) return defaultMissions();
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed) || parsed.length !== 3) return defaultMissions();
-        return parsed.map(m => ({
-          text: typeof m.text === "string" ? m.text : "",
-          done: !!m.done
-        }));
-      } catch {
-        return defaultMissions();
-      }
+        return parsed.map(m => ({ text: typeof m.text === "string" ? m.text : "", done: !!m.done }));
+      } catch { return defaultMissions(); }
     }
 
     function renderMissions() {
@@ -813,9 +763,7 @@
           else row.classList.remove("done");
         });
 
-        textarea.addEventListener("input", () => {
-          mission.text = textarea.value;
-        });
+        textarea.addEventListener("input", () => { mission.text = textarea.value; });
 
         row.appendChild(header);
         row.appendChild(textarea);
@@ -828,7 +776,6 @@
     function buildCheckpoints() {
       const container = document.getElementById("checkpointsList");
       container.innerHTML = "";
-
       checkpointValues.forEach(value => {
         const div = document.createElement("div");
         div.className = "checkpoint cp-locked";
@@ -903,11 +850,8 @@
 
         card.addEventListener("click", () => {
           const currentIncome = Number(localStorage.getItem(STORAGE_KEYS.currentIncome) || 0);
-          if (currentIncome >= r.value) {
-            openRewardModal(r);
-          } else {
-            showFeedback("rewardsFeedback", "Primeiro cruze esse checkpoint para ver o recado do Don.");
-          }
+          if (currentIncome >= r.value) openRewardModal(r);
+          else showFeedback("rewardsFeedback", "Primeiro cruze esse checkpoint para ver o recado do Don.");
         });
       });
     }
@@ -937,29 +881,21 @@
       document.getElementById("modalRewardDesc").textContent = reward.desc;
       modal.classList.add("open");
     }
-
-    function closeRewardModal() {
-      const modal = document.getElementById("rewardModal");
-      modal.classList.remove("open");
-    }
+    function closeRewardModal() { document.getElementById("rewardModal").classList.remove("open"); }
 
     function trackMaxIncomeAndNotify(currentIncome) {
       const prevMax = Number(localStorage.getItem(STORAGE_KEYS.maxIncomeEver) || 0);
       if (currentIncome > prevMax) {
         localStorage.setItem(STORAGE_KEYS.maxIncomeEver, String(currentIncome));
         let notified;
-        try {
-          notified = JSON.parse(localStorage.getItem(STORAGE_KEYS.rewardsNotified) || "[]");
-        } catch {
-          notified = [];
-        }
+        try { notified = JSON.parse(localStorage.getItem(STORAGE_KEYS.rewardsNotified) || "[]"); }
+        catch { notified = []; }
         if (!Array.isArray(notified)) notified = [];
 
         const newlyUnlocked = rewards.filter(r => currentIncome >= r.value && !notified.includes(r.value));
         if (newlyUnlocked.length > 0) {
-          const first = newlyUnlocked[0];
-          openRewardModal(first);
-          notified.push(first.value);
+          openRewardModal(newlyUnlocked[0]);
+          notified.push(newlyUnlocked[0].value);
           localStorage.setItem(STORAGE_KEYS.rewardsNotified, JSON.stringify(notified));
         }
       }
@@ -978,8 +914,7 @@
 
       document.getElementById("progressBarMain").style.width = percent + "%";
       document.getElementById("progressText").textContent = percent.toFixed(1) + "% do caminho";
-      document.getElementById("progressValues").textContent =
-        formatCurrency(currentIncome) + " / " + formatCurrency(targetIncome);
+      document.getElementById("progressValues").textContent = formatCurrency(currentIncome) + " / " + formatCurrency(targetIncome);
 
       const level = getLevel(percent);
       document.getElementById("levelName").textContent = level.name;
@@ -993,7 +928,6 @@
     function saveFinanceLocal() {
       const targetIncome = Number(document.getElementById("targetIncome").value || 0);
       const currentIncome = Number(document.getElementById("currentIncome").value || 0);
-
       localStorage.setItem(STORAGE_KEYS.targetIncome, String(targetIncome));
       localStorage.setItem(STORAGE_KEYS.currentIncome, String(currentIncome));
       updateFinanceUI();
@@ -1003,20 +937,14 @@
       const container = document.getElementById("missionsList");
       const raw = container.dataset.missions;
       let missions = defaultMissions();
-
-      try {
-        missions = JSON.parse(raw);
-      } catch {}
+      try { missions = JSON.parse(raw); } catch {}
 
       const rows = container.querySelectorAll(".mission-row");
       rows.forEach(row => {
         const idx = Number(row.dataset.index);
         const checkbox = row.querySelector('input[type="checkbox"]');
         const textarea = row.querySelector('textarea');
-        missions[idx] = {
-          text: textarea.value || "",
-          done: checkbox.checked
-        };
+        missions[idx] = { text: textarea.value || "", done: checkbox.checked };
       });
 
       localStorage.setItem(STORAGE_KEYS.missions, JSON.stringify(missions));
@@ -1036,27 +964,16 @@
       renderMissions();
     }
 
-    // ====== SUPABASE ======
+    // ====== SUPABASE (Painel) ======
     function buildStateObject() {
       const targetIncome = Number(localStorage.getItem(STORAGE_KEYS.targetIncome) || 100000);
       const currentIncome = Number(localStorage.getItem(STORAGE_KEYS.currentIncome) || 0);
       const missions = loadMissionsLocal();
       const maxIncomeEver = Number(localStorage.getItem(STORAGE_KEYS.maxIncomeEver) || currentIncome);
       let rewardsNotified = [];
-      try {
-        rewardsNotified = JSON.parse(localStorage.getItem(STORAGE_KEYS.rewardsNotified) || "[]");
-        if (!Array.isArray(rewardsNotified)) rewardsNotified = [];
-      } catch {
-        rewardsNotified = [];
-      }
-      return {
-        v: 1,
-        targetIncome,
-        currentIncome,
-        missions,
-        maxIncomeEver,
-        rewardsNotified
-      };
+      try { rewardsNotified = JSON.parse(localStorage.getItem(STORAGE_KEYS.rewardsNotified) || "[]"); if (!Array.isArray(rewardsNotified)) rewardsNotified = []; }
+      catch { rewardsNotified = []; }
+      return { v: 1, targetIncome, currentIncome, missions, maxIncomeEver, rewardsNotified };
     }
 
     async function saveStateToSupabase() {
@@ -1071,65 +988,329 @@
             "Content-Type": "application/json",
             Prefer: "resolution=merge-duplicates"
           },
-          body: JSON.stringify({
-            id: SUPABASE_ROW_ID,
-            state_json: state
-          })
+          body: JSON.stringify({ id: SUPABASE_ROW_ID, state_json: state })
         });
-      } catch (e) {
-        console.error("Erro ao salvar no Supabase", e);
-      }
+      } catch (e) { console.error("Erro ao salvar no Supabase", e); }
     }
 
     async function loadStateFromSupabase() {
-      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        updateFinanceUI();
-        renderMissions();
-        return;
-      }
-
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) { updateFinanceUI(); renderMissions(); return; }
       try {
-        const res = await fetch(
-          `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=eq.${SUPABASE_ROW_ID}&select=state_json&limit=1`,
-          {
-            headers: {
-              apikey: SUPABASE_ANON_KEY,
-              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-              "Content-Type": "application/json"
-            }
-          }
-        );
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=eq.${SUPABASE_ROW_ID}&select=state_json&limit=1`, {
+          headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json" }
+        });
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0 && data[0].state_json) {
           const state = data[0].state_json;
-          if (typeof state.targetIncome === "number") {
-            localStorage.setItem(STORAGE_KEYS.targetIncome, String(state.targetIncome));
-          }
-          if (typeof state.currentIncome === "number") {
-            localStorage.setItem(STORAGE_KEYS.currentIncome, String(state.currentIncome));
-          }
-          if (Array.isArray(state.missions)) {
-            localStorage.setItem(STORAGE_KEYS.missions, JSON.stringify(state.missions));
-          }
-          if (typeof state.maxIncomeEver === "number") {
-            localStorage.setItem(STORAGE_KEYS.maxIncomeEver, String(state.maxIncomeEver));
-          }
-          if (Array.isArray(state.rewardsNotified)) {
-            localStorage.setItem(STORAGE_KEYS.rewardsNotified, JSON.stringify(state.rewardsNotified));
-          }
+          if (typeof state.targetIncome === "number") localStorage.setItem(STORAGE_KEYS.targetIncome, String(state.targetIncome));
+          if (typeof state.currentIncome === "number") localStorage.setItem(STORAGE_KEYS.currentIncome, String(state.currentIncome));
+          if (Array.isArray(state.missions)) localStorage.setItem(STORAGE_KEYS.missions, JSON.stringify(state.missions));
+          if (typeof state.maxIncomeEver === "number") localStorage.setItem(STORAGE_KEYS.maxIncomeEver, String(state.maxIncomeEver));
+          if (Array.isArray(state.rewardsNotified)) localStorage.setItem(STORAGE_KEYS.rewardsNotified, JSON.stringify(state.rewardsNotified));
         }
-      } catch (e) {
-        console.error("Erro ao carregar do Supabase", e);
-      }
+      } catch (e) { console.error("Erro ao carregar do Supabase", e); }
 
       updateFinanceUI();
       renderMissions();
     }
 
+    /* =========================
+       DESAFIO (Supabase normal, sem login)
+       ========================= */
+    const CHALLENGE_START = new Date(2026, 0, 11); // 11/01/2026 (mês 0 = janeiro)
+    CHALLENGE_START.setHours(0,0,0,0);
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const challengeUser = { id: "desafio-180" };
+
+    let challengeDays = {};        // { [day_number]: row }
+    let selectedDay = null;
+    let score = 3;
+
+    let challengeInited = false;
+    let ringMomentumChart, ringProgressChart, ringQualityChart, ringExecChart, lineScoresChart;
+
+    function fmtDateBR(d){
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const yy = d.getFullYear();
+      return `${dd}/${mm}/${yy}`;
+    }
+    function dateForDay(n){
+      const d = new Date(CHALLENGE_START.getTime() + (n-1)*86400000);
+      d.setHours(0,0,0,0);
+      return d;
+    }
+    function todayNumber(){
+      const today = new Date(); today.setHours(0,0,0,0);
+      const diff = Math.round((today - CHALLENGE_START) / 86400000);
+      return Math.min(180, Math.max(1, diff + 1));
+    }
+
+    function closeModal(){ document.getElementById("modal").style.display = "none"; }
+    function openModal(){ document.getElementById("modal").style.display = "flex"; }
+    function openToday(){ openDay(todayNumber()); }
+
+    function openDay(n){
+      selectedDay = n;
+      score = Number(challengeDays[n]?.score ?? 3);
+
+      document.getElementById("modalTitle").innerText = "Dia " + n;
+      document.getElementById("modalDate").innerText  = fmtDateBR(dateForDay(n));
+
+      renderStars();
+      document.getElementById("did_create").checked = !!challengeDays[n]?.did_create_new;
+      document.getElementById("note").value = challengeDays[n]?.created_note || "";
+
+      openModal();
+    }
+
+    function renderStars(){
+      const s = document.getElementById("stars");
+      s.innerHTML = "";
+      for(let i=1;i<=5;i++){
+        const sp = document.createElement("span");
+        sp.innerText = i <= score ? "★" : "☆";
+        sp.onclick = () => { score = i; renderStars(); };
+        s.appendChild(sp);
+      }
+    }
+
+    async function saveDay(){
+      if(selectedDay == null) return;
+
+      const payload = {
+        user_id: challengeUser.id,
+        day_number: selectedDay,
+        day_date: dateForDay(selectedDay),
+        score: Number(score),
+        did_create_new: document.getElementById("did_create").checked,
+        created_note: document.getElementById("note").value
+      };
+
+      const { error } = await sb
+        .from("challenge_days")
+        .upsert(payload, { onConflict: "user_id,day_number" });
+
+      if(error){ alert("Erro ao salvar: " + error.message); return; }
+
+      closeModal();
+      await loadChallenge();
+    }
+
+    async function clearDay(){
+      if(selectedDay == null) return;
+      if(!confirm(`Apagar os dados do Dia ${selectedDay}?`)) return;
+
+      const { error } = await sb
+        .from("challenge_days")
+        .delete()
+        .eq("user_id", challengeUser.id)
+        .eq("day_number", selectedDay);
+
+      if(error){ alert("Erro ao apagar: " + error.message); return; }
+
+      delete challengeDays[selectedDay];
+      closeModal();
+      await loadChallenge();
+    }
+
+    function calcStreak(){
+      // streak de "Criei algo hoje" contando até hoje (retrocedendo)
+      let t = todayNumber();
+      let streak = 0;
+      for(let i=t; i>=1; i--){
+        const row = challengeDays[i];
+        if(row && row.did_create_new) streak++;
+        else break;
+      }
+      return streak;
+    }
+
+    function calcStats(){
+      const entries = Object.values(challengeDays);
+      const marked = entries.length;
+      const greens = entries.filter(e => Number(e.score) >= 4).length;
+      const created = entries.filter(e => !!e.did_create_new).length;
+
+      const avg = marked ? (entries.reduce((a,e)=>a+Number(e.score||0),0)/marked) : 0;
+      const greenPct = marked ? Math.round((greens/marked)*100) : 0;
+      const createPct = marked ? Math.round((created/marked)*100) : 0;
+
+      const last7 = [];
+      const today = todayNumber();
+      for(let i=Math.max(1, today-6); i<=today; i++){
+        const s = challengeDays[i]?.score;
+        last7.push(Number(s||0));
+      }
+      const momentum = last7.length ? Math.round((last7.filter(v=>v>=4).length/last7.length)*100) : 0;
+
+      return { marked, greens, created, avg, greenPct, createPct, momentum };
+    }
+
+    function updateBadge(avg){
+      const badge = document.getElementById("badgeStatus");
+      const txt = document.getElementById("badgeText");
+      badge.style.display = "inline-flex";
+
+      if(avg >= 4.5) txt.innerText = "Elite em execução";
+      else if(avg >= 4.0) txt.innerText = "Consistência forte";
+      else if(avg >= 3.5) txt.innerText = "Ritmo em construção";
+      else txt.innerText = "Recalibrar execução";
+    }
+
+    function renderGrid(){
+      const g = document.getElementById("grid");
+      g.innerHTML = "";
+      let greensCount = 0;
+
+      for(let i=1;i<=180;i++){
+        const d = document.createElement("div");
+        d.className = "day";
+        d.innerText = i;
+
+        const row = challengeDays[i];
+        if(row){
+          const sc = Number(row.score);
+          if(sc >= 4){ d.classList.add("g"); greensCount++; }
+          else if(sc === 3) d.classList.add("y");
+          else d.classList.add("r");
+        }
+
+        d.onclick = () => openDay(i);
+        g.appendChild(d);
+      }
+
+      document.getElementById("greens").innerText = greensCount;
+    }
+
+    function ensureCharts(){
+      const ringCfg = (val) => ({
+        type: "doughnut",
+        data: { labels: ["ok","resto"], datasets: [{ data: [val, 100-val], borderWidth: 0 }] },
+        options: { cutout: "75%", plugins: { legend: { display:false }, tooltip:{ enabled:false } } }
+      });
+
+      if(!ringMomentumChart){
+        ringMomentumChart = new Chart(document.getElementById("ringMomentum"), ringCfg(0));
+        ringProgressChart = new Chart(document.getElementById("ringProgress"), ringCfg(0));
+        ringQualityChart  = new Chart(document.getElementById("ringQuality"),  ringCfg(0));
+        ringExecChart     = new Chart(document.getElementById("ringExec"),     ringCfg(0));
+      }
+
+      if(!lineScoresChart){
+        lineScoresChart = new Chart(document.getElementById("lineScores"), {
+          type: "line",
+          data: { labels: [], datasets: [{ label:"score", data: [], tension: .35, pointRadius: 2 }] },
+          options: {
+            plugins: { legend: { display:false } },
+            scales: {
+              y: { min: 0, max: 5, ticks: { stepSize: 1 } }
+            }
+          }
+        });
+      }
+    }
+
+    function setRing(chart, val){
+      chart.data.datasets[0].data = [val, 100-val];
+      chart.update();
+    }
+
+    function renderCharts(){
+      ensureCharts();
+
+      const today = todayNumber();
+      const stats = calcStats();
+
+      // texto
+      document.getElementById("momenTxt").innerText = `${stats.momentum}%`;
+      document.getElementById("progTxt").innerText  = `${Math.round((today/180)*100)}%`;
+      document.getElementById("qualTxt").innerText  = `${Math.round((stats.avg/5)*100)}%`;
+      document.getElementById("execTxt").innerText  = `${stats.marked ? Math.round((stats.marked/today)*100) : 0}%`;
+
+      // rings
+      setRing(ringMomentumChart, stats.momentum);
+      setRing(ringProgressChart, Math.round((today/180)*100));
+      setRing(ringQualityChart, Math.round((stats.avg/5)*100));
+      setRing(ringExecChart, stats.marked ? Math.round((stats.marked/today)*100) : 0);
+
+      // line (1..180, mas só preenchendo onde tem score)
+      const labels = [];
+      const values = [];
+      for(let i=1;i<=today;i++){
+        labels.push(i);
+        values.push(challengeDays[i] ? Number(challengeDays[i].score||0) : null);
+      }
+      lineScoresChart.data.labels = labels;
+      lineScoresChart.data.datasets[0].data = values;
+      lineScoresChart.update();
+
+      // right stats
+      document.getElementById("daysMarked").innerText = String(stats.marked);
+      document.getElementById("avgScore").innerText   = stats.marked ? stats.avg.toFixed(1) : "–";
+      document.getElementById("greenPct").innerText   = stats.marked ? (stats.greenPct + "%") : "–";
+      document.getElementById("createPct").innerText  = stats.marked ? (stats.createPct + "%") : "–";
+
+      updateBadge(stats.avg);
+
+      // left
+      document.getElementById("dayNow").innerText = String(today);
+      document.getElementById("streak").innerText = String(calcStreak());
+    }
+
+    async function loadChallenge(){
+      // carrega só desse "usuário fixo"
+      const { data, error } = await sb
+        .from("challenge_days")
+        .select("*")
+        .eq("user_id", challengeUser.id);
+
+      if(error){ console.error(error); return; }
+
+      challengeDays = {};
+      (data || []).forEach(d => { challengeDays[d.day_number] = d; });
+
+      renderGrid();
+      renderCharts();
+    }
+
+    /* =========================
+       TABS
+       ========================= */
+    function showSection(which){
+      const painel  = document.getElementById("secPainel");
+      const desafio = document.getElementById("secDesafio");
+      const b1 = document.getElementById("tabPainel");
+      const b2 = document.getElementById("tabDesafio");
+
+      if(which === "painel"){
+        painel.style.display = "block";
+        desafio.style.display = "none";
+        b1.classList.add("active");
+        b2.classList.remove("active");
+      } else {
+        painel.style.display = "none";
+        desafio.style.display = "block";
+        b2.classList.add("active");
+        b1.classList.remove("active");
+
+        if(!challengeInited){
+          challengeInited = true;
+          loadChallenge();
+        } else {
+          loadChallenge();
+        }
+      }
+    }
+
+    /* =========================
+       BOOT
+       ========================= */
     document.addEventListener("DOMContentLoaded", () => {
+      // Painel
       buildCheckpoints();
       buildRewards();
-
       loadStateFromSupabase();
 
       document.getElementById("saveFinance").addEventListener("click", async () => {
@@ -1169,6 +1350,11 @@
       document.getElementById("closeRewardModal").addEventListener("click", closeRewardModal);
       document.getElementById("rewardModal").addEventListener("click", (e) => {
         if (e.target.id === "rewardModal") closeRewardModal();
+      });
+
+      // Fechar modal desafio clicando fora
+      document.getElementById("modal").addEventListener("click", (e) => {
+        if(e.target.id === "modal") closeModal();
       });
     });
   </script>
