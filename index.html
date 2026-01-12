@@ -449,6 +449,21 @@
   #secDesafio .rings > .ringCard{
     min-width: 0;
   }
+    /* Centraliza conteúdo interno dos cards */
+#secDesafio .ringCard{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Garante alinhamento horizontal dos rings */
+#secDesafio .rings{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
   </style>
 </head>
 <body>
