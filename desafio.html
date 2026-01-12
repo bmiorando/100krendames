@@ -409,6 +409,9 @@
     <div class="modal-box">
   <button class="closeBtn" onclick="closeModal()">✕</button>
   <h3 id="modalTitle"></h3>
+<div class="muted" id="modalDate" style="margin:6px 0 10px;"></div>
+<div class="stars" id="stars"></div>
+
 
       <div class="stars" id="stars"></div>
 
@@ -504,6 +507,7 @@ function openDay(n){
   selectedDay=n;
   score=Number(days[n]?.score ?? 3);
   document.getElementById("modalTitle").innerText="Dia "+n;
+document.getElementById("modalDate").innerText = fmtDateBR(dateForDay(n));
 
   renderStars();
   document.getElementById("did_create").checked=!!days[n]?.did_create_new;
@@ -713,6 +717,18 @@ function renderPremiumCharts(){
   delete days[selectedDay];
   closeModal();
   load();
+}
+function fmtDateBR(d){
+  const dd = String(d.getDate()).padStart(2,"0");
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const yy = d.getFullYear();
+  return `${dd}/${mm}/${yy}`;
+}
+
+function dateForDay(n){
+  const d = new Date(CHALLENGE_START.getTime() + (n-1)*86400000);
+  d.setHours(0,0,0,0);
+  return d;
 }
 
 </script>
