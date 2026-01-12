@@ -432,6 +432,23 @@
       .tab-btn { width: 100%; }
       #secDesafio .desafio-actions .d-btn { width: 100%; }
     }
+    /* seu CSS inteiro aqui... */
+
+  /* === FIX alinhamento dos rings no desktop === */
+  #secDesafio .ringCard{
+    overflow: hidden;
+    align-items: center;
+  }
+
+  #secDesafio .ringCard canvas{
+    width: 84px !important;
+    height: 84px !important;
+    display: block;
+  }
+
+  #secDesafio .rings > .ringCard{
+    min-width: 0;
+  }
   </style>
 </head>
 <body>
